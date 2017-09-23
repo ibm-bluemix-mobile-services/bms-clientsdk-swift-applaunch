@@ -82,6 +82,7 @@ public func registerWith(userId:String,completionHandler:@escaping(_ response:St
             
             var  headers = [String:String]()
             headers.updateValue(APPLICATION_JSON, forKey: CONTENT_TYPE)
+            headers.updateValue(self.clientSecret!, forKey: CLIENT_SECRET)
             
             let createUserRequest = Request(url: userRegUrl, method: HttpMethod.POST,headers: headers, queryParameters: nil, timeout: 60)
             
@@ -135,6 +136,7 @@ public func updateUserWith(userId:String,attribute:String,value:Any, completionH
     
     var  headers = [String:String]()
     headers.updateValue(APPLICATION_JSON, forKey: CONTENT_TYPE)
+    headers.updateValue(self.clientSecret!, forKey: CLIENT_SECRET)
     
     let createUserRequest = Request(url: userRegUrl, method: HttpMethod.PUT,headers: headers, queryParameters: nil, timeout: 60)
     
@@ -171,7 +173,8 @@ public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:I
         let resourceURL:String = CLIENT_ACTIVITY_SERVER+"/apps/\(self.applicationId!)/users/\(self.userId)/devices/\(self.deviceId)/actions"
         
         //TODO add client secret in headers
-        let headers = [CONTENT_TYPE : APPLICATION_JSON]
+        var headers = [CONTENT_TYPE : APPLICATION_JSON]
+        headers.updateValue(self.clientSecret!, forKey: CLIENT_SECRET)
         
         let getActionsRequest = Request(url: resourceURL, method: HttpMethod.GET,headers: headers, queryParameters: nil, timeout: 60)
         
@@ -255,7 +258,8 @@ public func sendMetricsWith(code:String) -> Void{
         let resourceURL:String = CLIENT_ACTIVITY_SERVER+"/apps/\(self.applicationId!)/users/\(self.userId)/devices/\(self.deviceId)/events/metrics"
         
         //TODO add client secret in headers
-        let headers = [CONTENT_TYPE : APPLICATION_JSON]
+        var headers = [CONTENT_TYPE : APPLICATION_JSON]
+        headers.updateValue(self.clientSecret!, forKey: CLIENT_SECRET)
         
         let metricsRequest = Request(url: resourceURL, method: HttpMethod.POST,headers: headers, queryParameters: nil, timeout: 60)
         

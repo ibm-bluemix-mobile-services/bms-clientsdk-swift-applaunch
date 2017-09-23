@@ -60,6 +60,8 @@ internal let TRUE = "true"
 
 internal let METRIC_CODES = "metricCodes"
 
+internal let CLIENT_SECRET = "clientSecret"
+
 //
 // ─── PUBLIC CONSTANTS ───────────────────────────────────────────────────────────
 //
