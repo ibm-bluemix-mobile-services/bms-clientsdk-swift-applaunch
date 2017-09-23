@@ -91,14 +91,14 @@ public func registerWith(userId:String,completionHandler:@escaping(_ response:St
                 if(response != nil){
                     let responseText = response?.responseText ?? ""
                     let status = response?.statusCode ?? 0
-                    if(status == 400){
-                        completionHandler("", status, responseText)
-                        self.isUserRegistered = false
-                    }else{
+                    if(status == 200 || status == 201){
                         self.isUserRegistered = true
                         self.userId = userId
                         AppLaunchUtils.saveValueToNSUserDefaults(value: TRUE, key: IS_USER_REGISTERED)
                         completionHandler(responseText,status,"")
+                    }else{
+                        completionHandler("", status, responseText)
+                        self.isUserRegistered = false
                     }
                 }else if let responseError = error{
                     completionHandler("", 500, responseError.localizedDescription)
@@ -145,14 +145,13 @@ public func updateUserWith(userId:String,attribute:String,value:Any, completionH
         if(response != nil){
             let responseText = response?.responseText ?? ""
             let status = response?.statusCode ?? 0
-            if(status == 400){
-                completionHandler("", status, responseText)
-                self.isUserRegistered = false
-            }else{
+            if(status == 200 || status == 201){
                 self.isUserRegistered = true
                 self.userId = userId
                 completionHandler(responseText,status,"")
-                
+            }else{
+                completionHandler("", status, responseText)
+                self.isUserRegistered = false
             }
         }else if let responseError = error{
             completionHandler("", 500, responseError.localizedDescription)
@@ -180,14 +179,11 @@ public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:I
         
         
         getActionsRequest.send(completionHandler: { (response, error) in
-            if response?.statusCode != nil {
+            if response != nil {
                 let status = response?.statusCode ?? 0
                 let responseText = response?.responseText ?? ""
                 
-                if(status == 404){
-                    print("[404] Actions Not found")
-                    completionHandler(nil,status,responseText)
-                }else{
+                if(status == 200 || status == 201){
                     if let data = responseText.data(using: String.Encoding.utf8) {
                         let respJson = JSON(data: data)
                         
@@ -195,6 +191,9 @@ public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:I
                         self.features = respJson["features"];
                         completionHandler(respJson["features"],200,"")
                     }
+                }else{
+                    print("[404] Actions Not found")
+                    completionHandler(nil,status,responseText)
                 }
                 
             }else {
