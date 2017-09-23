@@ -1,0 +1,18 @@
+PODS:
+  - BMSAnalyticsAPI (2.2.0)
+  - BMSCore (2.3.1):
+    - BMSAnalyticsAPI (~> 2.2)
+  - SwiftyJSON (3.1.4)
+
+DEPENDENCIES:
+  - BMSCore (~> 2.0)
+  - SwiftyJSON
+
+SPEC CHECKSUMS:
+  BMSAnalyticsAPI: 2dae02bc3321b944ae947a7d2f0f009d8035f8e7
+  BMSCore: 59a1a6769d398f55b8bd83be647e084812b924e0
+  SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
+
+PODFILE CHECKSUM: 19666a79fae5c07f762c76e000702a73a8deaf79
+
+COCOAPODS: 1.3.1
