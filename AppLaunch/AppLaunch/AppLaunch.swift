@@ -64,6 +64,7 @@ public func registerWith(userId:String,completionHandler:@escaping(_ response:St
     if(isInitialized) {
         
         if(AppLaunchUtils.getValueToNSUserDefaults(key: IS_USER_REGISTERED) == TRUE){
+            self.userId = userId
             completionHandler(MSG__USER_ALREADY_REGISTERED,201,"")
         } else {
         
@@ -245,7 +246,7 @@ public func getValueFor(featureWithCode:String,variableWithCode:String) -> Strin
 //
 
 public func sendMetricsWith(code:String) -> Void{
-    if(isInitialized && isUserRegistered){
+    if(isInitialized && (AppLaunchUtils.getValueToNSUserDefaults(key: IS_USER_REGISTERED) == TRUE)){
         
         var metricsData:JSON = JSON()
         metricsData[DEVICE_ID].string = self.deviceId
