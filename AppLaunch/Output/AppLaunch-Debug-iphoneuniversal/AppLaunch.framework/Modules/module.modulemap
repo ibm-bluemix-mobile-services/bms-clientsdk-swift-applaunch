@@ -1,0 +1,11 @@
+framework module AppLaunch {
+  umbrella header "AppLaunch.h"
+
+  export *
+  module * { export * }
+}
+
+module AppLaunch.Swift {
+    header "AppLaunch-Swift.h"
+    requires objc
+}

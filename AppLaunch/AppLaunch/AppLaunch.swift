@@ -12,6 +12,8 @@ import SwiftyJSON
 
 // ─────────────────────────────────────────────────────────────────────────
 
+private var APP_LAUNCH_SERVER:String = String()
+
 public class AppLaunch:NSObject{
     
 public private(set) var clientSecret: String?
@@ -40,11 +42,14 @@ private var features:JSON = nil
     
 public func initializeWithAppGUID (applicationId: String, clientSecret: String, region: String) {
     
-    if AppLaunchUtils.validateString(object: clientSecret) &&  AppLaunchUtils.validateString(object: applicationId){
+    if AppLaunchUtils.validateString(object: clientSecret) &&  AppLaunchUtils.validateString(object: applicationId) && AppLaunchUtils.validateString(object: region){
         
         self.clientSecret = clientSecret
         self.applicationId = applicationId
         self.region = region
+        
+        APP_LAUNCH_SERVER = "\(MOBILESERVICES)\(region)/\(APPLAUNCH_CONTEXT)"
+        
         isInitialized = true;
         
         let authManager  = BMSClient.sharedInstance.authorizationManager
@@ -79,7 +84,7 @@ public func registerWith(userId:String,completionHandler:@escaping(_ response:St
             deviceData[APP_NAME].string = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as! String
             deviceData[USER_ID].string = userId
             
-            let userRegUrl = REGISTRATION_SERVER+"/apps/\(self.applicationId!)/users"
+            let userRegUrl = APP_LAUNCH_SERVER+"/apps/\(self.applicationId!)/users"
             
             var  headers = [String:String]()
             headers.updateValue(APPLICATION_JSON, forKey: CONTENT_TYPE)
@@ -132,8 +137,7 @@ public func updateUserWith(userId:String,attribute:String,value:Any, completionH
         break
     }
     
-    
-    let userRegUrl = REGISTRATION_SERVER+"/apps/\(self.applicationId!)/users/\(userId)"
+    let userRegUrl = APP_LAUNCH_SERVER+"/apps/\(self.applicationId!)/users/\(userId)"
     
     var  headers = [String:String]()
     headers.updateValue(APPLICATION_JSON, forKey: CONTENT_TYPE)
@@ -168,15 +172,15 @@ public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:I
     
     if(isInitialized && (AppLaunchUtils.getValueToNSUserDefaults(key: IS_USER_REGISTERED) == TRUE)){
         
+        let resourceURL:String = APP_LAUNCH_SERVER+"/apps/\(self.applicationId!)/users/\(self.userId)/actions"
         
-        //TODO build url for different bluemix zones and envs
-        let resourceURL:String = CLIENT_ACTIVITY_SERVER+"/apps/\(self.applicationId!)/users/\(self.userId)/devices/\(self.deviceId)/actions"
-        
-        //TODO add client secret in headers
         var headers = [CONTENT_TYPE : APPLICATION_JSON]
         headers.updateValue(self.clientSecret!, forKey: CLIENT_SECRET)
         
-        let getActionsRequest = Request(url: resourceURL, method: HttpMethod.GET,headers: headers, queryParameters: nil, timeout: 60)
+        var queryParam = [String:String]()
+        queryParam.updateValue(self.deviceId, forKey: DEVICE_ID)
+        
+        let getActionsRequest = Request(url: resourceURL, method: HttpMethod.GET,headers: headers, queryParameters: queryParam, timeout: 60)
         
         
         getActionsRequest.send(completionHandler: { (response, error) in
@@ -255,13 +259,16 @@ public func sendMetricsWith(code:String) -> Void{
         
         print("metrics payload \(metricsData.description)")
         
-        let resourceURL:String = CLIENT_ACTIVITY_SERVER+"/apps/\(self.applicationId!)/users/\(self.userId)/devices/\(self.deviceId)/events/metrics"
+        let resourceURL:String = APP_LAUNCH_SERVER+"/apps/\(self.applicationId!)/users/\(self.userId)/events/metrics"
         
         //TODO add client secret in headers
         var headers = [CONTENT_TYPE : APPLICATION_JSON]
         headers.updateValue(self.clientSecret!, forKey: CLIENT_SECRET)
         
-        let metricsRequest = Request(url: resourceURL, method: HttpMethod.POST,headers: headers, queryParameters: nil, timeout: 60)
+        var queryParam = [String:String]()
+        queryParam.updateValue(self.deviceId, forKey: DEVICE_ID)
+        
+        let metricsRequest = Request(url: resourceURL, method: HttpMethod.POST,headers: headers, queryParameters: queryParam, timeout: 60)
         
         metricsRequest.send(requestBody: metricsData.description.data(using: .utf8),completionHandler:{(response,error) in
             

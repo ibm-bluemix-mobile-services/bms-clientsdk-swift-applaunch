@@ -12,9 +12,9 @@ import Foundation
 // ─── INTERNAL CONSTANTS ───────────────────────────────────────────────────────────
 //
 
-internal let REGISTRATION_SERVER:String = "http://mobileservices-dev.us-south.containers.mybluemix.net/applaunch/v1"
+internal let MOBILESERVICES:String = "http://mobileservices"
 
-internal let CLIENT_ACTIVITY_SERVER:String = "http://mobileservices-dev.us-south.containers.mybluemix.net/applaunch/v1"
+internal let APPLAUNCH_CONTEXT:String = "applaunch/v1"
 
 internal let APPLICATION_ID:String = "applicationId"
 
@@ -66,8 +66,20 @@ internal let CLIENT_SECRET = "clientSecret"
 // ─── PUBLIC CONSTANTS ───────────────────────────────────────────────────────────
 //
 
-public let US_SOUTH:String = "us-south"
+public let US_SOUTH:String = ".us-south.containers.mybluemix.net"
 
-public let UNITED_KINGDOM:String = "eu-gb"
+public let UNITED_KINGDOM:String = ".eu-gb.containers.mybluemix.net"
 
-public let SYDNEY:String = "sydney"
+public let SYDNEY:String = ".sydney.containers.mybluemix.net"
+
+public let US_SOUTH_STAGING:String = "-staging.us-south.containers.mybluemix.net"
+
+public let UNITED_KINGDOM_STAGING:String = "-staging.eu-gb.containers.mybluemix.net"
+
+public let SYDNEY_STAGING:String = "-staging.sydney.containers.mybluemix.net"
+
+public let US_SOUTH_DEV:String = "-dev.us-south.containers.mybluemix.net"
+
+public let UNITED_KINGDOM_DEV:String = "-dev.eu-gb.containers.mybluemix.net"
+
+public let SYDNEY_DEV:String = "-dev.sydney.containers.mybluemix.net"
