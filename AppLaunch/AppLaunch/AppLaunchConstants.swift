@@ -62,6 +62,8 @@ internal let METRIC_CODES = "metricCodes"
 
 internal let CLIENT_SECRET = "clientSecret"
 
+internal let REGION = "region"
+
 //
 // ─── PUBLIC CONSTANTS ───────────────────────────────────────────────────────────
 //

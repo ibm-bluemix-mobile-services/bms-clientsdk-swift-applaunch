@@ -31,5 +31,65 @@ internal class AppLaunchUtils:NSObject{
         }
         return true
     }
+    
+    class func saveUserContext(userId:String, applicationId:String, deviceId:String, region:String){
+        print("Saving user context :: userId:\(userId), applicationId:\(applicationId), deviceId:\(deviceId), region:\(region)")
+        UserDefaults.standard.set(userId, forKey: USER_ID)
+        UserDefaults.standard.set(deviceId, forKey: DEVICE_ID)
+        UserDefaults.standard.set(applicationId, forKey: APP_ID)
+        UserDefaults.standard.set(region, forKey: REGION)
+        UserDefaults.standard.synchronize()
+    }
+    
+    class func userNeedsToBeRegistered(userId:String, applicationId:String, deviceId:String, region:String)->Bool{
+        var needsToBeRegistered = true
+        var existingUserID = ""
+        var existingApplicationId = ""
+        var existingDeviceId = ""
+        var existingRegion = ""
+        
+        if(UserDefaults.standard.value(forKey: USER_ID) != nil){
+            existingUserID = UserDefaults.standard.value(forKey: USER_ID) as! String
+            print("existing user ID : \(existingUserID)")
+            if(existingUserID == userId){
+                needsToBeRegistered = false
+            } else {
+                return true
+            }
+        }
+        
+        if(UserDefaults.standard.value(forKey: DEVICE_ID) != nil){
+            existingDeviceId = UserDefaults.standard.value(forKey: DEVICE_ID) as! String
+            print("existing device ID : \(existingDeviceId)")
+            if(existingDeviceId == deviceId){
+                needsToBeRegistered = false
+            } else {
+                return true
+            }
+        }
+        
+        if(UserDefaults.standard.value(forKey: APP_ID) != nil){
+            existingApplicationId = UserDefaults.standard.value(forKey: APP_ID) as! String
+            print("existing app ID : \(existingApplicationId)")
+            if(existingApplicationId == applicationId){
+                needsToBeRegistered = false
+            } else {
+                return true
+            }
+        }
+        
+        if(UserDefaults.standard.value(forKey: REGION) != nil){
+            existingRegion = UserDefaults.standard.value(forKey: REGION) as! String
+            print("existing region ID : \(existingRegion)")
+            if(existingRegion == region){
+                needsToBeRegistered = false
+            } else {
+                return true
+            }
+        }
+        
+        print("needs to be registered \(needsToBeRegistered)")
+        return needsToBeRegistered
+    }
 
 }

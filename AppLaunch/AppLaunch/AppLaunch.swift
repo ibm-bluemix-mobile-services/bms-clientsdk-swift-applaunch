@@ -47,6 +47,11 @@ public func initializeWithAppGUID (applicationId: String, clientSecret: String, 
         self.clientSecret = clientSecret
         self.applicationId = applicationId
         self.region = region
+        if(UserDefaults.standard.value(forKey: USER_ID) != nil){
+            self.userId = UserDefaults.standard.value(forKey: USER_ID) as! String
+        }else{
+            self.userId = ""
+        }
         
         APP_LAUNCH_SERVER = "\(MOBILESERVICES)\(region)/\(APPLAUNCH_CONTEXT)"
         
@@ -68,7 +73,7 @@ public func initializeWithAppGUID (applicationId: String, clientSecret: String, 
 public func registerWith(userId:String,completionHandler:@escaping(_ response:String, _ statusCode:Int, _ error:String) -> Void){
     if(isInitialized) {
         
-        if(AppLaunchUtils.getValueToNSUserDefaults(key: IS_USER_REGISTERED) == TRUE){
+        if(!AppLaunchUtils.userNeedsToBeRegistered(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
             self.userId = userId
             completionHandler(MSG__USER_ALREADY_REGISTERED,201,"")
         } else {
@@ -100,6 +105,7 @@ public func registerWith(userId:String,completionHandler:@escaping(_ response:St
                     if(status == 200 || status == 201){
                         self.isUserRegistered = true
                         self.userId = userId
+                        AppLaunchUtils.saveUserContext(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)
                         AppLaunchUtils.saveValueToNSUserDefaults(value: TRUE, key: IS_USER_REGISTERED)
                         completionHandler(responseText,status,"")
                     }else{
@@ -152,6 +158,8 @@ public func updateUserWith(userId:String,attribute:String,value:Any, completionH
             let status = response?.statusCode ?? 0
             if(status == 200 || status == 201){
                 self.isUserRegistered = true
+                AppLaunchUtils.saveUserContext(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)
+                AppLaunchUtils.saveValueToNSUserDefaults(value: TRUE, key: IS_USER_REGISTERED)
                 self.userId = userId
                 completionHandler(responseText,status,"")
             }else{
@@ -170,7 +178,7 @@ public func updateUserWith(userId:String,attribute:String,value:Any, completionH
     
 public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:Int?, _ error:String) -> Void){
     
-    if(isInitialized && (AppLaunchUtils.getValueToNSUserDefaults(key: IS_USER_REGISTERED) == TRUE)){
+    if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
         
         let resourceURL:String = APP_LAUNCH_SERVER+"/apps/\(self.applicationId!)/users/\(self.userId)/actions"
         
@@ -227,7 +235,8 @@ public func hasFeatureWith(code:String) -> Bool{
     }
     return hasFeature
 }
-    
+
+
 public func getValueFor(featureWithCode:String,variableWithCode:String) -> String{
     for(key,feature) in self.features{
         if let featureCode = feature["code"].string{
@@ -250,7 +259,7 @@ public func getValueFor(featureWithCode:String,variableWithCode:String) -> Strin
 //
 
 public func sendMetricsWith(code:String) -> Void{
-    if(isInitialized && (AppLaunchUtils.getValueToNSUserDefaults(key: IS_USER_REGISTERED) == TRUE)){
+    if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
         
         var metricsData:JSON = JSON()
         metricsData[DEVICE_ID].string = self.deviceId
