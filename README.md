@@ -4,7 +4,7 @@ This is the Swift SDK for IBM App Launch service.
 
 >The Bluemix App Launch service on Bluemix helps in controlled reach of app features. It provides a unified service to customize and personalize your applications to different audience with just few clicks.
 
-Ensure that you go through [Bluemix App Launch service documentation](https://console.ng.bluemix.net/docs/services/) before you start.
+Ensure that you go through [Bluemix App Launch service documentation](https://console-regional.ng.bluemix.net/docs/services/app-launch/index.html) before you start.
 
 ***
 
