@@ -253,6 +253,23 @@ public func getValueFor(featureWithCode:String,variableWithCode:String) -> Strin
     }
     return ""
 }
+    
+public func getValueFor(featureWithCode:String,propertiesWithCode:String) -> String{
+    for(key,feature) in self.features{
+        if let featureCode = feature["code"].string{
+            if featureCode == featureWithCode{
+                for(k,variable) in feature["variables"]{
+                    if let varibleCode = variable["code"].string{
+                        if varibleCode == variableWithCode{
+                            return variable["value"].stringValue
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return ""
+}
 
 //
 // ─── METRICS ──────────────────────────────────────────────────────────────
