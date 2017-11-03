@@ -260,7 +260,7 @@ public func getValueFor(featureWithCode:String,propertiesWithCode:String) -> Str
             if featureCode == featureWithCode{
                 for(k,variable) in feature["variables"]{
                     if let varibleCode = variable["code"].string{
-                        if varibleCode == variableWithCode{
+                        if varibleCode == propertiesWithCode{
                             return variable["value"].stringValue
                         }
                     }

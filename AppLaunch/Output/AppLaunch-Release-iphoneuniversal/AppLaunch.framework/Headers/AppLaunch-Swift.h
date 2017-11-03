@@ -198,6 +198,7 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) AppLaunch * 
 - (void)updateUserWithUserId:(NSString * _Nonnull)userId attribute:(NSString * _Nonnull)attribute value:(id _Nonnull)value completionHandler:(void (^ _Nonnull)(NSString * _Nonnull, NSInteger, NSString * _Nonnull))completionHandler;
 - (BOOL)hasFeatureWithCode:(NSString * _Nonnull)code SWIFT_WARN_UNUSED_RESULT;
 - (NSString * _Nonnull)getValueForFeatureWithCode:(NSString * _Nonnull)featureWithCode variableWithCode:(NSString * _Nonnull)variableWithCode SWIFT_WARN_UNUSED_RESULT;
+- (NSString * _Nonnull)getValueForFeatureWithCode:(NSString * _Nonnull)featureWithCode propertiesWithCode:(NSString * _Nonnull)propertiesWithCode SWIFT_WARN_UNUSED_RESULT;
 - (void)sendMetricsWithCode:(NSString * _Nonnull)code;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
