@@ -1,4 +1,4 @@
-# bms-AppLaunch-ios-clientsdk
+# IBM Cloud Mobile Services - AppLaunch iOS Swift Client SDK
 
 This is the Swift SDK for IBM App Launch service.
 
@@ -50,14 +50,15 @@ Ensure that you go through [Bluemix App Launch service documentation](https://co
 
 The Bluemix Mobile Services Swift SDKs are available via [Cocoapods](http://cocoapods.org/) and [Carthage](https://github.com/Carthage/Carthage).
 
-### Cocoapods (full version coming soon)
+### Cocoapods
 To install AppLaunch using Cocoapods, add it to your Podfile:
 
 ```ruby
 use_frameworks!
 
 target 'MyApp' do
-    platform :ios, '8.0'
+    platform :ios, '9.0'
+    pod 'IBMAppLaunch'
     pod 'BMSCore', '~> 2.0'
     pod 'SwiftyJSON'
 end
@@ -89,13 +90,6 @@ This will installs your dependencies and creates a new Xcode workspace.
 ```
 MyApp.xcworkspace
 ```
-
-#### Add AppLaunch framework
-
-Drag and drop the downloaded AppLaunch.framework into your project.
-
-Add the AppLaunch.framework into **Embedded Binaries** section.
-
 ***
 
 ### Carthage (coming soon)
@@ -116,7 +110,7 @@ To complete the integration, follow the instructions [here](https://github.com/C
 ### Reference the SDK in your code.
 
 ```
-import AppLaunch
+import IBMAppLaunch
 ```
 ### Initializing the AppLaunch SDK
 
