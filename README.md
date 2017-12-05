@@ -1,4 +1,4 @@
-# IBM Cloud Mobile Services - Client SDK Swift AppLaunch
+# IBM Cloud Mobile Services - AppLaunch iOS Swift Client SDK
 
 This is the Swift SDK for IBM App Launch service.
 
@@ -110,7 +110,7 @@ To complete the integration, follow the instructions [here](https://github.com/C
 ### Reference the SDK in your code.
 
 ```
-import AppLaunch
+import IBMAppLaunch
 ```
 ### Initializing the AppLaunch SDK
 
