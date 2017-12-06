@@ -1,5 +1,5 @@
 //
-//  AppLaunchPrompts.swift
+//  AppLaunchMessages.swift
 //  AppLaunch
 //
 //  Created by Chethan Kumar on 9/23/17.

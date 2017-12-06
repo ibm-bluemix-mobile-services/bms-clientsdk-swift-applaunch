@@ -26,7 +26,7 @@
 		480BF7A71F764E0B00C70D6C /* AppLaunch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7A61F764E0B00C70D6C /* AppLaunch.swift */; };
 		480BF7A91F764FD800C70D6C /* AppLaunchUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7A81F764FD800C70D6C /* AppLaunchUtils.swift */; };
 		480BF7AB1F76574E00C70D6C /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7AA1F76574E00C70D6C /* UIDeviceExtension.swift */; };
-		480BF7AD1F765ED400C70D6C /* AppLaunchMsgs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7AC1F765ED400C70D6C /* AppLaunchMsgs.swift */; };
+		480BF7AD1F765ED400C70D6C /* AppLaunchMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7AC1F765ED400C70D6C /* AppLaunchMessages.swift */; };
 		CA3FDD87BB6A7A7FBEFF3561 /* Pods_AppLaunch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60AA0B9F4AAC555FDCF1D31C /* Pods_AppLaunch.framework */; };
 /* End PBXBuildFile section */
 
@@ -38,7 +38,7 @@
 		480BF7A61F764E0B00C70D6C /* AppLaunch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunch.swift; sourceTree = "<group>"; };
 		480BF7A81F764FD800C70D6C /* AppLaunchUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchUtils.swift; sourceTree = "<group>"; };
 		480BF7AA1F76574E00C70D6C /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
-		480BF7AC1F765ED400C70D6C /* AppLaunchMsgs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchMsgs.swift; sourceTree = "<group>"; };
+		480BF7AC1F765ED400C70D6C /* AppLaunchMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchMessages.swift; sourceTree = "<group>"; };
 		60AA0B9F4AAC555FDCF1D31C /* Pods_AppLaunch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppLaunch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		78E4E8142005C6CF854C78C3 /* Pods-AppLaunch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppLaunch.release.xcconfig"; path = "Pods/Target Support Files/Pods-AppLaunch/Pods-AppLaunch.release.xcconfig"; sourceTree = "<group>"; };
 		8327BD995040CE0E7DF6CD64 /* Pods-AppLaunch.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppLaunch.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AppLaunch/Pods-AppLaunch.debug.xcconfig"; sourceTree = "<group>"; };
@@ -76,7 +76,9 @@
 		480BF78F1F763CAA00C70D6C = {
 			isa = PBXGroup;
 			children = (
-				480BF79B1F763CAA00C70D6C /* AppLaunch */,
+				480BF79C1F763CAB00C70D6C /* AppLaunch.h */,
+				480BF79D1F763CAB00C70D6C /* Info.plist */,
+				480BF79B1F763CAA00C70D6C /* Source */,
 				480BF79A1F763CAA00C70D6C /* Products */,
 				075E0DFB8D3DC1BA95764074 /* Pods */,
 				30C27C85F41EF29AA1B4F499 /* Frameworks */,
@@ -91,18 +93,40 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		480BF79B1F763CAA00C70D6C /* AppLaunch */ = {
+		480BF79B1F763CAA00C70D6C /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				480BF79C1F763CAB00C70D6C /* AppLaunch.h */,
-				480BF7A41F764C7200C70D6C /* AppLaunchConstants.swift */,
-				480BF7AC1F765ED400C70D6C /* AppLaunchMsgs.swift */,
-				480BF7A61F764E0B00C70D6C /* AppLaunch.swift */,
-				480BF7AA1F76574E00C70D6C /* UIDeviceExtension.swift */,
-				480BF7A81F764FD800C70D6C /* AppLaunchUtils.swift */,
-				480BF79D1F763CAB00C70D6C /* Info.plist */,
+				C77C6E631FD7C7B300217304 /* API */,
+				C77C6E641FD7C7C000217304 /* Extension */,
+				C77C6E621FD7C79E00217304 /* Utils */,
 			);
-			path = AppLaunch;
+			path = Source;
+			sourceTree = "<group>";
+		};
+		C77C6E621FD7C79E00217304 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				480BF7AC1F765ED400C70D6C /* AppLaunchMessages.swift */,
+				480BF7A41F764C7200C70D6C /* AppLaunchConstants.swift */,
+				480BF7A81F764FD800C70D6C /* AppLaunchUtils.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		C77C6E631FD7C7B300217304 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				480BF7A61F764E0B00C70D6C /* AppLaunch.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		C77C6E641FD7C7C000217304 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				480BF7AA1F76574E00C70D6C /* UIDeviceExtension.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -241,7 +265,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				480BF7AD1F765ED400C70D6C /* AppLaunchMsgs.swift in Sources */,
+				480BF7AD1F765ED400C70D6C /* AppLaunchMessages.swift in Sources */,
 				480BF7A91F764FD800C70D6C /* AppLaunchUtils.swift in Sources */,
 				480BF7AB1F76574E00C70D6C /* UIDeviceExtension.swift in Sources */,
 				480BF7A71F764E0B00C70D6C /* AppLaunch.swift in Sources */,
@@ -378,7 +402,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = AppLaunch/Info.plist;
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -404,7 +428,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = AppLaunch/Info.plist;
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
