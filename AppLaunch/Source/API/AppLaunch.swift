@@ -36,10 +36,14 @@ private var userId:String = String()
     
 private var features:JSON = nil
     
-//
-// ─── INITIALIZE ────────────────────────────────────────────────────────────
-//
-    
+/**
+intializes app
+     
+- parameters:
+     - applicationId: app GUID value
+     - clientSecret: clientSecret appLaunch client secret value
+     - region: bluemixRegionSuffix specifies the location where the app is hosted
+*/
 public func initializeWithAppGUID (applicationId: String, clientSecret: String, region: String) {
     
     if AppLaunchUtils.validateString(object: clientSecret) &&  AppLaunchUtils.validateString(object: applicationId) && AppLaunchUtils.validateString(object: region){
@@ -47,6 +51,8 @@ public func initializeWithAppGUID (applicationId: String, clientSecret: String, 
         self.clientSecret = clientSecret
         self.applicationId = applicationId
         self.region = region
+        self.features = AppLaunchFileManager.loadFeatureFromFiles()!
+        
         if(UserDefaults.standard.value(forKey: USER_ID) != nil){
             self.userId = UserDefaults.standard.value(forKey: USER_ID) as! String
         }else{
@@ -66,10 +72,15 @@ public func initializeWithAppGUID (applicationId: String, clientSecret: String, 
     }
 }
     
-//
-// ─── REGISTER USER ──────────────────────────────────────────────────────────
-//
+/**
+Registers app with server
 
+- returns
+Completion Handler with response, statuscode and error object
+
+- parameters:
+     - userID: user ID value
+*/
 public func registerWith(userId:String,completionHandler:@escaping(_ response:String, _ statusCode:Int, _ error:String) -> Void){
     if(isInitialized) {
         
@@ -120,10 +131,16 @@ public func registerWith(userId:String,completionHandler:@escaping(_ response:St
     }
 }
     
-//
-// ─── UPDATE USER ───────────────────────────────────────────────────────────
-//
-
+/**
+Updates User Information
+ 
+- returns
+Completion handler with response, statuscode and error object
+ 
+- parameters:
+     - userID: user ID value
+     - attribute: user attribute value
+*/
 public func updateUserWith(userId:String,attribute:String,value:Any, completionHandler:@escaping(_ response:String, _ statusCode:Int, _ error:String) -> Void){
     
     var deviceData:JSON = JSON()
@@ -172,10 +189,12 @@ public func updateUserWith(userId:String,attribute:String,value:Any, completionH
     })
 }
     
-//
-// ─── ACTIONS ───────────────────────────────────────────────────────────────
-//
-    
+/**
+Actions API
+ 
+- returns
+Completion handler with features JSON object, statuscode and error object
+*/
 public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:Int?, _ error:String) -> Void){
     
     if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
@@ -198,11 +217,16 @@ public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:I
                 
                 if(status == 200 || status == 201){
                     if let data = responseText.data(using: String.Encoding.utf8) {
-                        let respJson = JSON(data: data)
-                        
-                        print("response data from server \(responseText)")
-                        self.features = respJson["features"];
-                        completionHandler(respJson["features"],200,"")
+                        do {
+                            let respJson = try JSON(data: data)
+                            print("response data from server \(responseText)")
+                            self.features = respJson["features"];
+                            AppLaunchFileManager.saveJSON(Data: self.features)
+                            
+                            completionHandler(respJson["features"],200,"")
+                        }catch{
+                            completionHandler(nil,404,error.localizedDescription)
+                        }
                     }
                 }else{
                     print("[404] Actions Not found")
@@ -220,10 +244,12 @@ public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:I
     }
 }
     
-//
-// ─── FEATURES ──────────────────────────────────────────────────────────────
-//
-
+/**
+Checks if the feature is enabled for the app
+ 
+- returns
+ Bool value
+*/
 public func hasFeatureWith(code:String) -> Bool{
     var hasFeature = false
     for(key,feature) in self.features{
@@ -237,6 +263,7 @@ public func hasFeatureWith(code:String) -> Bool{
 }
 
 
+//has been deprecated
 public func getValueFor(featureWithCode:String,variableWithCode:String) -> String{
     for(key,feature) in self.features{
         if let featureCode = feature["code"].string{
@@ -253,7 +280,17 @@ public func getValueFor(featureWithCode:String,variableWithCode:String) -> Strin
     }
     return ""
 }
-    
+
+/**
+Returns the value for particular property in a feature
+ 
+- returns
+String value of the property
+ 
+- parameters:
+     - featureWithCode: feature code
+     - propertiesWithCode: property code
+*/
 public func getValueFor(featureWithCode:String,propertiesWithCode:String) -> String{
     for(key,feature) in self.features{
         if let featureCode = feature["code"].string{
@@ -271,10 +308,12 @@ public func getValueFor(featureWithCode:String,propertiesWithCode:String) -> Str
     return ""
 }
 
-//
-// ─── METRICS ──────────────────────────────────────────────────────────────
-//
-
+/**
+Sends metrics information to App Launch Server
+ 
+- parameters:
+     - code: metric code
+*/
 public func sendMetricsWith(code:String) -> Void{
     if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
         
