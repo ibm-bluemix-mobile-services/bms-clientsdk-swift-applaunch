@@ -70,6 +70,10 @@ internal let JSON_PATH_EXTENSION:String = ".json"
 
 internal let JSON_NAME:String = "json"
 
+internal let NAME:String = "name"
+
+internal let CODE:String = "code"
+
 //
 // ─── PUBLIC CONSTANTS ───────────────────────────────────────────────────────────
 //
