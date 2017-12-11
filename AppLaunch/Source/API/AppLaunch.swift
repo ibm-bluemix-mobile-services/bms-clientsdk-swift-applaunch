@@ -34,7 +34,7 @@ private var isUserRegistered = false
 
 private var userId:String = String()
     
-private var features:JSON = nil
+private var features:JSON = JSON.null
     
 /**
 intializes app
@@ -97,7 +97,7 @@ public func registerWith(userId:String,completionHandler:@escaping(_ response:St
             deviceData[PLATFORM].string = IOS
             deviceData[APP_ID].string = Bundle.main.bundleIdentifier!
             deviceData[APP_VERSION].string = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-            deviceData[APP_NAME].string = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as! String
+            deviceData[APP_NAME].string = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String
             deviceData[USER_ID].string = userId
             
             let userRegUrl = APP_LAUNCH_SERVER+"/apps/\(self.applicationId!)/users"
@@ -148,10 +148,10 @@ public func updateUserWith(userId:String,attribute:String,value:Any, completionH
     deviceData[USER_ID].string = self.userId
     switch type(of: value) {
     case is String.Type:
-        deviceData[attribute].string = value as! String
+        deviceData[attribute].string = value as? String
         
     case is Numeric.Type:
-        deviceData[attribute].number = value as! NSNumber
+        deviceData[attribute].number = value as? NSNumber
         
     case is Bool.Type:
         deviceData[attribute].boolValue = value as! Bool
@@ -217,16 +217,12 @@ public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:I
                 
                 if(status == 200 || status == 201){
                     if let data = responseText.data(using: String.Encoding.utf8) {
-                        do {
-                            let respJson = try JSON(data: data)
-                            print("response data from server \(responseText)")
-                            self.features = respJson["features"];
-                            AppLaunchFileManager.saveJSON(Data: self.features)
-                            
-                            completionHandler(respJson["features"],200,"")
-                        }catch{
-                            completionHandler(nil,404,error.localizedDescription)
-                        }
+                        let respJson = JSON(data: data)
+                        print("response data from server \(responseText)")
+                        self.features = respJson["features"];
+                        AppLaunchFileManager.saveJSON(Data: self.features)
+                        
+                        completionHandler(respJson["features"],200,"")
                     }
                 }else{
                     print("[404] Actions Not found")
@@ -252,7 +248,7 @@ Checks if the feature is enabled for the app
 */
 public func hasFeatureWith(code:String) -> Bool{
     var hasFeature = false
-    for(key,feature) in self.features{
+    for(_,feature) in self.features{
         if let featureCode = feature["code"].string{
             if featureCode == code{
                 hasFeature = true
@@ -265,10 +261,10 @@ public func hasFeatureWith(code:String) -> Bool{
 
 //has been deprecated
 public func getValueFor(featureWithCode:String,variableWithCode:String) -> String{
-    for(key,feature) in self.features{
+    for(_,feature) in self.features{
         if let featureCode = feature["code"].string{
             if featureCode == featureWithCode{
-                for(k,variable) in feature["variables"]{
+                for(_,variable) in feature["variables"]{
                     if let varibleCode = variable["code"].string{
                         if varibleCode == variableWithCode{
                             return variable["value"].stringValue
@@ -292,10 +288,10 @@ String value of the property
      - propertiesWithCode: property code
 */
 public func getValueFor(featureWithCode:String,propertiesWithCode:String) -> String{
-    for(key,feature) in self.features{
+    for(_,feature) in self.features{
         if let featureCode = feature["code"].string{
             if featureCode == featureWithCode{
-                for(k,variable) in feature["variables"]{
+                for(_,variable) in feature["variables"]{
                     if let varibleCode = variable["code"].string{
                         if varibleCode == propertiesWithCode{
                             return variable["value"].stringValue
