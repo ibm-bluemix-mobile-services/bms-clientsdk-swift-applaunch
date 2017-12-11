@@ -1,6 +1,6 @@
 # IBM Cloud Mobile Services - AppLaunch iOS Swift Client SDK
 
-[![Build Status](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch.svg?branch=development)](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)
+[![Build Status](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch.svg?branch=master)](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)
 [![CocoaPods](https://img.shields.io/cocoapods/v/IBMAppLaunch.svg)](https://github.com/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)
 
 This is the Swift SDK for IBM App Launch service.
