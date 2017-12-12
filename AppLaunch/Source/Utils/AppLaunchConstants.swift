@@ -64,6 +64,16 @@ internal let CLIENT_SECRET = "clientSecret"
 
 internal let REGION = "region"
 
+internal let SERVICE_NAME:String = "AppLaunch"
+
+internal let JSON_PATH_EXTENSION:String = ".json"
+
+internal let JSON_NAME:String = "json"
+
+internal let NAME:String = "name"
+
+internal let CODE:String = "code"
+
 //
 // ─── PUBLIC CONSTANTS ───────────────────────────────────────────────────────────
 //
