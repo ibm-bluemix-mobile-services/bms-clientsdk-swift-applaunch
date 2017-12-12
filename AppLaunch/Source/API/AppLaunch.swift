@@ -217,12 +217,14 @@ public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:I
                 
                 if(status == 200 || status == 201){
                     if let data = responseText.data(using: String.Encoding.utf8) {
-                        let respJson = JSON(data: data)
-                        print("response data from server \(responseText)")
-                        self.features = respJson["features"];
-                        AppLaunchFileManager.saveJSON(Data: self.features)
-                        
-                        completionHandler(respJson["features"],200,"")
+                        do {
+                            let respJson = try JSON(data: data)
+                            print("response data from server \(responseText)")
+                            self.features = respJson["features"];
+                            completionHandler(respJson["features"],200,"")
+                        } catch {
+                            completionHandler(nil,404,error.localizedDescription)
+                        }
                     }
                 }else{
                     print("[404] Actions Not found")
