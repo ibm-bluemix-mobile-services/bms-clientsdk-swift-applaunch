@@ -89,7 +89,7 @@ internal class AppLaunchFileManager {
             if (filePath != nil) {
                 do {
                     let data = try Data(contentsOf: URL(fileURLWithPath: filePath!), options: .alwaysMapped)
-                    return JSON(data: data);
+                    return try JSON(data: data);
                 } catch let error {
                     print("parse error: \(error.localizedDescription)")
                 }

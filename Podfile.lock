@@ -1,17 +1,17 @@
 PODS:
-  - BMSAnalyticsAPI (2.2.0)
-  - BMSCore (2.3.1):
+  - BMSAnalyticsAPI (2.2.3)
+  - BMSCore (2.3.5):
     - BMSAnalyticsAPI (~> 2.2)
-  - SwiftyJSON (3.1.4)
+  - SwiftyJSON (4.0.0)
 
 DEPENDENCIES:
   - BMSCore (~> 2.0)
   - SwiftyJSON
 
 SPEC CHECKSUMS:
-  BMSAnalyticsAPI: 2dae02bc3321b944ae947a7d2f0f009d8035f8e7
-  BMSCore: 59a1a6769d398f55b8bd83be647e084812b924e0
-  SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
+  BMSAnalyticsAPI: d259379069bb11d2ff365bf5b796a2677dfc3849
+  BMSCore: 446c16a7dbe14b5019751617a00dd947c65cca82
+  SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
 
 PODFILE CHECKSUM: 19666a79fae5c07f762c76e000702a73a8deaf79
 

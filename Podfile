@@ -5,7 +5,7 @@ target 'AppLaunch' do
     use_frameworks!
     platform :ios, '9.0'
     pod 'BMSCore', '~> 2.0'
-    pod 'SwiftyJSON'
+    pod 'SwiftyJSON', '~> 4.0.0'
 end
 
 post_install do |installer|
