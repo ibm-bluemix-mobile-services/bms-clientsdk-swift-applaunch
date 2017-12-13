@@ -74,6 +74,8 @@ internal let NAME:String = "name"
 
 internal let CODE:String = "code"
 
+internal let FEATURES:String = "AppLaunchFeatures"
+
 //
 // ─── PUBLIC CONSTANTS ───────────────────────────────────────────────────────────
 //

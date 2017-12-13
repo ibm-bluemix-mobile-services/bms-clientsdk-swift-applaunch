@@ -51,7 +51,8 @@ public func initializeWithAppGUID (applicationId: String, clientSecret: String, 
         self.clientSecret = clientSecret
         self.applicationId = applicationId
         self.region = region
-        self.features = AppLaunchFileManager.loadFeatureFromFiles()!
+        AppLaunchFileManager.loadFeatureFromFiles()
+        self.features = AppLaunchFileManager.loadFeatures()
         
         if(UserDefaults.standard.value(forKey: USER_ID) != nil){
             self.userId = UserDefaults.standard.value(forKey: USER_ID) as! String
@@ -220,7 +221,8 @@ public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:I
                         do {
                             let respJson = try JSON(data: data)
                             print("response data from server \(responseText)")
-                            self.features = respJson["features"];
+                            AppLaunchFileManager.saveFeatures(data: respJson["features"])
+                            self.features = AppLaunchFileManager.loadFeatures()
                             completionHandler(respJson["features"],200,"")
                         } catch {
                             completionHandler(nil,404,error.localizedDescription)
