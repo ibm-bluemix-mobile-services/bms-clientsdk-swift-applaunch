@@ -1,5 +1,8 @@
 # IBM Cloud Mobile Services - AppLaunch iOS Swift Client SDK
 
+[![Build Status](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch.svg?branch=master)](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)
+[![CocoaPods](https://img.shields.io/cocoapods/v/IBMAppLaunch.svg)](https://github.com/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)
+
 This is the Swift SDK for IBM App Launch service.
 
 >The Bluemix App Launch service on Bluemix helps in controlled reach of app features. It provides a unified service to customize and personalize your applications to different audience with just few clicks.
@@ -7,6 +10,12 @@ This is the Swift SDK for IBM App Launch service.
 Ensure that you go through [Bluemix App Launch service documentation](https://console-regional.ng.bluemix.net/docs/services/app-launch/index.html) before you start.
 
 ***
+
+## Build Status
+
+| Master | Development |
+|:------:|:-----------:|
+|  [![Build Status](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch.svg?branch=master)](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)      |    [![Build Status](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch.svg?branch=development)](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)         |
 
 ## Contents
 - [Setup App Launch Service](#setup-app-launch-service)
