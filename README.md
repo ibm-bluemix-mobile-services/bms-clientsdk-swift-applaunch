@@ -11,6 +11,12 @@ Ensure that you go through [Bluemix App Launch service documentation](https://co
 
 ***
 
+## Build Status
+
+| Master | Development |
+|:------:|:-----------:|
+|  [![Build Status](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch.svg?branch=master)](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)      |    [![Build Status](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch.svg?branch=development)](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)         |
+
 ## Contents
 - [Setup App Launch Service](#setup-app-launch-service)
 	 - [Creating the service](#creating-the-service)
