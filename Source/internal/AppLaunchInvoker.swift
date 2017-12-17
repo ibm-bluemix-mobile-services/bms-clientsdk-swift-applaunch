@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BMSCore
 import SwiftyJSON
 
 internal class AppLaunchInvoker: NSObject {
