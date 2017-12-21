@@ -12,10 +12,6 @@ import Foundation
 // ─── INTERNAL CONSTANTS ───────────────────────────────────────────────────────────
 //
 
-internal let MOBILESERVICES:String = "http://mobileservices"
-
-internal let APPLAUNCH_CONTEXT:String = "applaunch/v1"
-
 internal let APPLICATION_ID:String = "applicationId"
 
 internal let IOS:String = "iOS"
@@ -39,6 +35,8 @@ internal let APP_NAME:String = "appName"
 internal let USER_ID:String = "userId"
 
 internal let APPLE:String = "Apple"
+
+internal let BUTTONS:String = "buttons"
 
 internal let BUTTON_NAME:String = "buttonName"
 
@@ -64,21 +62,29 @@ internal let CLIENT_SECRET = "clientSecret"
 
 internal let REGION = "region"
 
-internal let SERVICE_NAME:String = "AppLaunch"
-
-internal let JSON_PATH_EXTENSION:String = ".json"
-
-internal let JSON_NAME:String = "json"
-
 internal let NAME:String = "name"
 
 internal let CODE:String = "code"
 
 internal let FEATURES:String = "AppLaunchFeatures"
 
-//
-// ─── PUBLIC CONSTANTS ───────────────────────────────────────────────────────────
-//
+internal let TEMPLATE_TYPE:String = "templateType"
+
+internal let VARIABLES:String = "variables"
+
+internal let VALUE:String = "value"
+
+internal let CONTENT:String = "content"
+
+internal let TITLE:String = "title"
+
+internal let SUB_TITLE:String = "subTitle"
+
+internal let IMAGE_URL:String = "imageUrl"
+
+/**
+ Constants and TypeAlias which are available in AppLaunch SDK
+ */
 
 public let US_SOUTH:String = ".us-south.containers.mybluemix.net"
 
@@ -97,3 +103,9 @@ public let US_SOUTH_DEV:String = "-dev.us-south.containers.mybluemix.net"
 public let UNITED_KINGDOM_DEV:String = "-dev.eu-gb.containers.mybluemix.net"
 
 public let SYDNEY_DEV:String = "-dev.sydney.containers.mybluemix.net"
+
+/**
+ `AppLaunchCompletionHandler` is a callback for AppLaunch REST APIs.
+ */
+public typealias AppLaunchCompletionHandler = (_ Response:AppLaunchResponse?, _ Error:AppLaunchFailResponse? ) -> Void
+

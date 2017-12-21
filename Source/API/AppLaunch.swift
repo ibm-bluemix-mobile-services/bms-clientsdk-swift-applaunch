@@ -2,7 +2,7 @@
 //  AppLaunch.swift
 //  AppLaunch
 //
-//  Created by Chethan Kumar on 9/23/17.
+//  Created by Chethan Kumar & Vittal Pai on 9/23/17.
 //  Copyright © 2017 IBM. All rights reserved.
 //
 
@@ -10,19 +10,28 @@ import Foundation
 import BMSCore
 import SwiftyJSON
 
-// ─────────────────────────────────────────────────────────────────────────
+// MARK: - Swift 3 & Swift 4
 
+/**
+ A singleton that serves as an entry point to IBM Cloud AppLaunch service communication.
+*/
 public class AppLaunch:NSObject{
     
-    public private(set) var clientSecret: String?
+    // MARK: Properties
     
-    public private(set) var applicationId: String?
+    /// This singleton should be used for all `AppLaunch` activity.
+    public static let sharedInstance = AppLaunch()
     
-    public private(set) var region: String?
+    
+    public typealias AppLaunchCompletionHandler1 = Int
+    
+    private var clientSecret: String?
+    
+    private var applicationId: String?
+    
+    private var region: String?
     
     private var deviceId = String()
-    
-    public static let sharedInstance = AppLaunch()
     
     private var bmsClient = BMSClient.sharedInstance
     
@@ -36,13 +45,16 @@ public class AppLaunch:NSObject{
     
     private var URLBuilder:AppLaunchURLBuilder? = nil
     
+    // MARK: Initializers
+    
     /**
-     intializes app
+     The required initializer for the `AppLaunch` class.
      
-     - parameters:
-     - applicationId: app GUID value
-     - clientSecret: clientSecret appLaunch client secret value
-     - region: bluemixRegionSuffix specifies the location where the app is hosted
+     This method will intialize the AppLaunch with appID, clientSecret and region based registration.
+     
+     - parameter applicationId: app GUID value
+     - parameter clientSecret: clientSecret appLaunch client secret value
+     - parameter region: bluemixRegionSuffix specifies the location where the app is hosted
      */
     public func initializeWithAppGUID (applicationId: String, clientSecret: String, region: String) {
         
@@ -51,8 +63,8 @@ public class AppLaunch:NSObject{
             self.clientSecret = clientSecret
             self.applicationId = applicationId
             self.region = region
-            AppLaunchFileManager.loadFeatureFromFiles()
-            self.features = AppLaunchFileManager.loadFeatures()
+            AppLaunchCacheManager.sharedInstance.loadDefaultFeatures()
+            self.features = AppLaunchCacheManager.sharedInstance.getFeatures()
             
             if(UserDefaults.standard.value(forKey: USER_ID) != nil){
                 self.userId = UserDefaults.standard.value(forKey: USER_ID) as! String
@@ -72,33 +84,24 @@ public class AppLaunch:NSObject{
         }
     }
     
+    // MARK: Methods
+    
     /**
-     Registers app with server
      
-     - returns
-     Completion Handler with response, statuscode and error object
+     This Methode used to register the client device to the IBM Cloud AppLaunch service.
      
-     - parameters:
-     - userID: user ID value
+     - Parameter userID: This is the userId value.
+     
+     - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the success information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
      */
-    public func registerWith(userId:String,completionHandler:@escaping(_ response:String, _ statusCode:Int, _ error:String) -> Void){
+    public func registerWith(userId:String,completionHandler:@escaping AppLaunchCompletionHandler){
         if(isInitialized) {
             
             if(!AppLaunchUtils.userNeedsToBeRegistered(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
                 self.userId = userId
-                completionHandler(MSG__USER_ALREADY_REGISTERED,201,"")
+                completionHandler(AppLaunchResponse(201, MSG__USER_ALREADY_REGISTERED), nil)
             } else {
-                var deviceData:JSON = JSON()
-                deviceData[DEVICE_ID].string = self.deviceId
-                deviceData[MODEL].string = UIDevice.current.modelName
-                deviceData[BRAND].string = APPLE
-                deviceData[OS_VERSION].string = UIDevice.current.systemVersion
-                deviceData[PLATFORM].string = IOS
-                deviceData[APP_ID].string = Bundle.main.bundleIdentifier!
-                deviceData[APP_VERSION].string = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-                deviceData[APP_NAME].string = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String
-                deviceData[USER_ID].string = userId
-                
+                let deviceData:JSON = AppLaunchUtils.getDeviceData(self.deviceId, userId)
                 let request = AppLaunchInvoker(url: URLBuilder!.getAppRegistrationURL(), method: HttpMethod.POST, timeout: 60)
                 request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
                 request.addHeader(self.clientSecret!, CLIENT_SECRET)
@@ -112,13 +115,13 @@ public class AppLaunch:NSObject{
                             self.userId = userId
                             AppLaunchUtils.saveUserContext(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)
                             AppLaunchUtils.saveValueToNSUserDefaults(value: TRUE, key: IS_USER_REGISTERED)
-                            completionHandler(responseText,status,"")
+                            completionHandler(AppLaunchResponse(status,responseText), nil)
                         }else{
-                            completionHandler("", status, responseText)
+                            completionHandler(nil, AppLaunchFailResponse(status, responseText))
                             self.isUserRegistered = false
                         }
                     }else if let responseError = error{
-                        completionHandler("", 500, responseError.localizedDescription)
+                        completionHandler(nil, AppLaunchFailResponse(500,responseError.localizedDescription))
                     }
                 })
                 request.execute()
@@ -127,16 +130,15 @@ public class AppLaunch:NSObject{
     }
     
     /**
-     Updates User Information
      
-     - returns
-     Completion handler with response, statuscode and error object
+     This Methode used to update the user information in the IBM Cloud AppLaunch service.
      
-     - parameters:
-     - userID: user ID value
-     - attribute: user attribute value
+     - Parameter userID: This is the userId value.
+     - Parameter attribute: This is the attribute value.
+     
+     - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the success information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
      */
-    public func updateUserWith(userId:String,attribute:String,value:Any, completionHandler:@escaping(_ response:String, _ statusCode:Int, _ error:String) -> Void){
+    public func updateUserWith(userId:String,attribute:String,value:Any, completionHandler:@escaping AppLaunchCompletionHandler){
         
         var deviceData:JSON = JSON()
         deviceData[DEVICE_ID].string = self.deviceId
@@ -168,13 +170,13 @@ public class AppLaunch:NSObject{
                     AppLaunchUtils.saveUserContext(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)
                     AppLaunchUtils.saveValueToNSUserDefaults(value: TRUE, key: IS_USER_REGISTERED)
                     self.userId = userId
-                    completionHandler(responseText,status,"")
+                    completionHandler(AppLaunchResponse(status, responseText), nil)
                 }else{
-                    completionHandler("", status, responseText)
+                    completionHandler(nil, AppLaunchFailResponse(status, responseText))
                     self.isUserRegistered = false
                 }
             }else if let responseError = error{
-                completionHandler("", 500, responseError.localizedDescription)
+                completionHandler(nil, AppLaunchFailResponse(500, responseError.localizedDescription))
             }
         })
         request.execute()
@@ -182,12 +184,12 @@ public class AppLaunch:NSObject{
     }
     
     /**
-     Actions API
      
-     - returns
-     Completion handler with features JSON object, statuscode and error object
+     This Methode used to get all the available actions from the IBM Cloud AppLaunch service.
+     
+     - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the actions information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
      */
-    public func actions(completionHandler:@escaping(_ features:JSON?, _ statusCode:Int?, _ error:String) -> Void){
+    public func actions(completionHandler:@escaping AppLaunchCompletionHandler){
         
         if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
             
@@ -205,26 +207,26 @@ public class AppLaunch:NSObject{
                             do {
                                 let respJson = try JSON(data: data)
                                 print("response data from server \(responseText)")
-                                AppLaunchFileManager.saveFeatures(data: respJson["features"])
-                                self.features = AppLaunchFileManager.loadFeatures()
-                                completionHandler(respJson["features"],200,"")
+                                AppLaunchCacheManager.sharedInstance.addFeatures(respJson[FEATURES])
+                                self.features = AppLaunchCacheManager.sharedInstance.getFeatures()
+                                completionHandler(AppLaunchResponse(200, nil, respJson[FEATURES]), nil)
                             } catch {
-                                completionHandler(nil,404,error.localizedDescription)
+                                completionHandler(nil, AppLaunchFailResponse(404, error.localizedDescription))
                             }
                         }
                     }else{
                         print("[404] Actions Not found")
-                        completionHandler(nil,status,responseText)
+                        completionHandler(nil, AppLaunchFailResponse(status, responseText))
                     }
                     
                 }else {
-                    completionHandler([], 500 , MSG__ERR_GET_ACTIONS)
+                    completionHandler(nil, AppLaunchFailResponse(500, MSG__ERR_GET_ACTIONS))
                 }
             })
             request.execute()
             
         }else{
-            completionHandler([], 500 , MSG__ERR_NOT_REG_NOT_INIT)
+            completionHandler(nil, AppLaunchFailResponse(500, MSG__ERR_NOT_REG_NOT_INIT))
             
         }
     }
@@ -278,12 +280,12 @@ public class AppLaunch:NSObject{
      */
     public func getValueFor(featureWithCode:String,propertiesWithCode:String) -> String{
         for(_,feature) in self.features{
-            if let featureCode = feature["code"].string{
+            if let featureCode = feature[CODE].string{
                 if featureCode == featureWithCode{
-                    for(_,variable) in feature["variables"]{
-                        if let varibleCode = variable["code"].string{
+                    for(_,variable) in feature[VARIABLES]{
+                        if let varibleCode = variable[CODE].string{
                             if varibleCode == propertiesWithCode{
-                                return variable["value"].stringValue
+                                return variable[VALUE].stringValue
                             }
                         }
                     }
@@ -294,12 +296,12 @@ public class AppLaunch:NSObject{
     }
     
     /**
-     Sends metrics information to App Launch Server
      
-     - parameters:
-     - code: metric code
+     This Methode used to send metrics information to the IBM Cloud AppLaunch service.
+     
+     - Parameter code: This is the metric code value.
      */
-    public func sendMetricsWith(code:String) -> Void{
+    public func sendMetricsWith(code:String) -> Void {
         if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
             
             var metricsData:JSON = JSON()
@@ -327,7 +329,61 @@ public class AppLaunch:NSObject{
         }else{
             print(MSG__ERR_METRICS_NOT_INIT)
         }
-        
+
+    }
+    
+    /**
+     
+     This Methode returns the InApp Message information from the IBM Cloud AppLaunch service.
+     
+     - Parameter autoRenderUI: This is the autoRenderUI value.
+     
+     - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the InApp Messaging information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
+     */
+    public func getDynamicContent(autoRenderUI:Bool, completionHandler: @escaping AppLaunchCompletionHandler) -> Void {
+        if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
+            
+            let request = AppLaunchInvoker(url: (URLBuilder?.getInAppMessagingURL(self.userId))!, method: HttpMethod.GET, timeout: 60)
+            request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
+            request.addHeader(self.clientSecret!, CLIENT_SECRET)
+            request.addQueryParameter(self.deviceId, DEVICE_ID)
+            request.setCompletionHandler({(response, error) in
+                if response != nil {
+                    let status = response?.statusCode ?? 0
+                    let responseText = response?.responseText ?? ""
+                    if(status == 200 || status == 201){
+                        if let data = responseText.data(using: String.Encoding.utf8) {
+                            do {
+                                let respJson = try JSON(data: data)
+                                if(autoRenderUI){
+                                    let template : String = respJson[TEMPLATE_TYPE].stringValue
+                                    switch(template){
+                                    case MessageType.Banner.rawValue:
+                                        AppLaunchInAppMessaging(respJson).ShowBanner()
+                                        break
+                                    default :
+                                        break
+                                    }
+                                }else{
+                                    completionHandler(AppLaunchResponse(200, responseText), nil)
+                                }
+                            } catch {
+                                completionHandler(nil, AppLaunchFailResponse(404, error.localizedDescription))
+                            }
+                        }
+                    }else{
+                        print("[404] Actions Not found")
+                        completionHandler(nil, AppLaunchFailResponse(status, responseText))
+                    }
+                    
+                }else {
+                    completionHandler(nil, AppLaunchFailResponse(500, "Error while getting message from captivate service"))
+                }
+            })
+            request.execute()
+        }else{
+             completionHandler(nil, AppLaunchFailResponse(500, MSG__ERR_NOT_REG_NOT_INIT))
+        }
     }
     
     

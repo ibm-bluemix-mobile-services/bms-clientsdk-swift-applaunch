@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 internal class AppLaunchUtils:NSObject{
     
@@ -30,6 +31,20 @@ internal class AppLaunchUtils:NSObject{
             return false;
         }
         return true
+    }
+    
+    class func getDeviceData(_ deviceID:String,_ userID:String) -> JSON {
+        var deviceData:JSON = JSON()
+        deviceData[DEVICE_ID].string = deviceID
+        deviceData[MODEL].string = UIDevice.current.modelName
+        deviceData[BRAND].string = APPLE
+        deviceData[OS_VERSION].string = UIDevice.current.systemVersion
+        deviceData[PLATFORM].string = IOS
+        deviceData[APP_ID].string = Bundle.main.bundleIdentifier!
+        deviceData[APP_VERSION].string = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        deviceData[APP_NAME].string = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String
+        deviceData[USER_ID].string = userID
+        return deviceData
     }
     
     class func saveUserContext(userId:String, applicationId:String, deviceId:String, region:String){

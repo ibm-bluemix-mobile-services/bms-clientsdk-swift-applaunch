@@ -10,7 +10,7 @@
 import Foundation
 import UIKit
 
-public extension UIDevice {
+internal extension UIDevice {
     
     var modelName: String {
         var systemInfo = utsname()
