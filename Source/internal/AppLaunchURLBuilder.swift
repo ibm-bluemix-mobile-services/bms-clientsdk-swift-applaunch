@@ -9,39 +9,42 @@
 import Foundation
 
 internal class AppLaunchURLBuilder {
-    private var baseURL:String
-    private var applicationID:String
+    private let baseURL:String
+    private let applicationID:String
+    private let deviceID:String
     private let FORWARDSLASH = "/"
     private let APPS = "/apps"
-    private let USERS = "/users"
+    private let DEVICES = "/devices"
     private let ACTIONS = "/actions"
     private let EVENTS = "/events"
     private let METRICS = "/metrics"
     private let MOBILESERVICES:String = "http://mobileservices"
     private let APPLAUNCH_CONTEXT:String = "/applaunch/v1"
     
-    init(_ region:String,_ appID:String) {
-        baseURL = MOBILESERVICES + FORWARDSLASH + region + APPLAUNCH_CONTEXT
-        applicationID = appID
+    
+    init(_ region:String,_ appID:String,_ deviceID:String) {
+        self.baseURL = MOBILESERVICES + region + APPLAUNCH_CONTEXT
+        self.applicationID = appID
+        self.deviceID = deviceID
     }
     
     func getAppRegistrationURL() -> String {
-        return self.baseURL + APPS + FORWARDSLASH + applicationID + USERS
+        return self.baseURL + APPS + FORWARDSLASH + applicationID + DEVICES
     }
     
-    func getUserURL(_ userId:String) -> String {
-        return getAppRegistrationURL() + FORWARDSLASH + USER_ID
+    func getUserURL() -> String {
+        return getAppRegistrationURL() + FORWARDSLASH + deviceID
     }
     
-    func getActionURL(_ userId:String) -> String {
-        return getAppRegistrationURL() + FORWARDSLASH + userId + ACTIONS
+    func getActionURL() -> String {
+        return getAppRegistrationURL() + FORWARDSLASH + deviceID + ACTIONS
     }
     
-    func getMetricsURL(_ userId:String) -> String {
-        return getAppRegistrationURL() + FORWARDSLASH + userId + EVENTS + METRICS
+    func getMetricsURL() -> String {
+        return getAppRegistrationURL() + FORWARDSLASH + deviceID + EVENTS + METRICS
     }
     
-    func getInAppMessagingURL(_ userId:String) -> String {
-        return getAppRegistrationURL() + FORWARDSLASH + userId + "/captivateengine/inappmsg"
+    func getInAppMessagingURL() -> String {
+        return getAppRegistrationURL() + FORWARDSLASH + deviceID + "/captivateengine/inappmsg"
     }
 }

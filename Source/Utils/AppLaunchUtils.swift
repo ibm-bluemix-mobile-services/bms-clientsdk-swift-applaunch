@@ -33,78 +33,37 @@ internal class AppLaunchUtils:NSObject{
         return true
     }
     
-    class func getDeviceData(_ deviceID:String,_ userID:String) -> JSON {
-        var deviceData:JSON = JSON()
-        deviceData[DEVICE_ID].string = deviceID
-        deviceData[MODEL].string = UIDevice.current.modelName
-        deviceData[BRAND].string = APPLE
-        deviceData[OS_VERSION].string = UIDevice.current.systemVersion
-        deviceData[PLATFORM].string = IOS
-        deviceData[APP_ID].string = Bundle.main.bundleIdentifier!
-        deviceData[APP_VERSION].string = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-        deviceData[APP_NAME].string = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String
-        deviceData[USER_ID].string = userID
-        return deviceData
+    class func getRegistrationData(_ deviceID:String,_ userID:String,_ attributes:JSON) -> JSON {
+        var registrationData:JSON = JSON()
+        registrationData[DEVICE_ID].string = deviceID
+        registrationData[PLATFORM].string = IOS
+        registrationData[USER_ID].string = userID
+        if (attributes != JSON.null) {
+            registrationData[ATTRIBUTES] = attributes
+        }
+        return registrationData
     }
     
     class func saveUserContext(userId:String, applicationId:String, deviceId:String, region:String){
+        let defaults = AppLaunchCacheManager.sharedInstance
         print("Saving user context :: userId:\(userId), applicationId:\(applicationId), deviceId:\(deviceId), region:\(region)")
-        UserDefaults.standard.set(userId, forKey: USER_ID)
-        UserDefaults.standard.set(deviceId, forKey: DEVICE_ID)
-        UserDefaults.standard.set(applicationId, forKey: APP_ID)
-        UserDefaults.standard.set(region, forKey: REGION)
-        UserDefaults.standard.synchronize()
+        defaults.addString(userId, USER_ID)
+        defaults.addString(deviceId, DEVICE_ID)
+        defaults.addString(applicationId, APP_ID)
+        defaults.addString(region, REGION)
     }
     
     class func userNeedsToBeRegistered(userId:String, applicationId:String, deviceId:String, region:String)->Bool{
-        var needsToBeRegistered = true
-        var existingUserID = ""
-        var existingApplicationId = ""
-        var existingDeviceId = ""
-        var existingRegion = ""
+        let defaults = AppLaunchCacheManager.sharedInstance
         
-        if(UserDefaults.standard.value(forKey: USER_ID) != nil){
-            existingUserID = UserDefaults.standard.value(forKey: USER_ID) as! String
-            print("existing user ID : \(existingUserID)")
-            if(existingUserID == userId){
-                needsToBeRegistered = false
-            } else {
-                return true
+        if (!defaults.readString(USER_ID).isEmpty && !defaults.readString(DEVICE_ID).isEmpty && !defaults.readString(APP_ID).isEmpty && !defaults.readString(REGION).isEmpty) {
+            // Check if existing data is changed with stored data
+            if (defaults.readString(USER_ID) == userId && defaults.readString(DEVICE_ID) == deviceId && defaults.readString(APP_ID) == applicationId && defaults.readString(REGION) == region) {
+                // Stored app data and device data is not changed
+                return false
             }
         }
-        
-        if(UserDefaults.standard.value(forKey: DEVICE_ID) != nil){
-            existingDeviceId = UserDefaults.standard.value(forKey: DEVICE_ID) as! String
-            print("existing device ID : \(existingDeviceId)")
-            if(existingDeviceId == deviceId){
-                needsToBeRegistered = false
-            } else {
-                return true
-            }
-        }
-        
-        if(UserDefaults.standard.value(forKey: APP_ID) != nil){
-            existingApplicationId = UserDefaults.standard.value(forKey: APP_ID) as! String
-            print("existing app ID : \(existingApplicationId)")
-            if(existingApplicationId == applicationId){
-                needsToBeRegistered = false
-            } else {
-                return true
-            }
-        }
-        
-        if(UserDefaults.standard.value(forKey: REGION) != nil){
-            existingRegion = UserDefaults.standard.value(forKey: REGION) as! String
-            print("existing region ID : \(existingRegion)")
-            if(existingRegion == region){
-                needsToBeRegistered = false
-            } else {
-                return true
-            }
-        }
-        
-        print("needs to be registered \(needsToBeRegistered)")
-        return needsToBeRegistered
+        return true
     }
 
 }

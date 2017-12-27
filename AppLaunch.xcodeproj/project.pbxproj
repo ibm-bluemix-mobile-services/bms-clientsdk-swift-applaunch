@@ -25,7 +25,6 @@
 		480BF7A51F764C7200C70D6C /* AppLaunchConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7A41F764C7200C70D6C /* AppLaunchConstants.swift */; };
 		480BF7A71F764E0B00C70D6C /* AppLaunch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7A61F764E0B00C70D6C /* AppLaunch.swift */; };
 		480BF7A91F764FD800C70D6C /* AppLaunchUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7A81F764FD800C70D6C /* AppLaunchUtils.swift */; };
-		480BF7AB1F76574E00C70D6C /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7AA1F76574E00C70D6C /* UIDeviceExtension.swift */; };
 		480BF7AD1F765ED400C70D6C /* AppLaunchMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7AC1F765ED400C70D6C /* AppLaunchMessages.swift */; };
 		C7C60C281FD832600094BB18 /* AppLaunchCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C60C271FD832600094BB18 /* AppLaunchCacheManager.swift */; };
 		C7D4DAA11FE1084B007C9E98 /* AppLaunchInvoker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAA01FE1084B007C9E98 /* AppLaunchInvoker.swift */; };
@@ -46,7 +45,6 @@
 		480BF7A41F764C7200C70D6C /* AppLaunchConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchConstants.swift; sourceTree = "<group>"; };
 		480BF7A61F764E0B00C70D6C /* AppLaunch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunch.swift; sourceTree = "<group>"; };
 		480BF7A81F764FD800C70D6C /* AppLaunchUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchUtils.swift; sourceTree = "<group>"; };
-		480BF7AA1F76574E00C70D6C /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		480BF7AC1F765ED400C70D6C /* AppLaunchMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchMessages.swift; sourceTree = "<group>"; };
 		60AA0B9F4AAC555FDCF1D31C /* Pods_AppLaunch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppLaunch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		78E4E8142005C6CF854C78C3 /* Pods-AppLaunch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppLaunch.release.xcconfig"; path = "Pods/Target Support Files/Pods-AppLaunch/Pods-AppLaunch.release.xcconfig"; sourceTree = "<group>"; };
@@ -117,7 +115,6 @@
 				C77C6E631FD7C7B300217304 /* API */,
 				C7D4DA9F1FE10808007C9E98 /* Internal */,
 				C7D9FD181FE7B8AA009932AD /* Response */,
-				C77C6E641FD7C7C000217304 /* Extension */,
 				C77C6E621FD7C79E00217304 /* Utils */,
 				C7D4DAAB1FE28806007C9E98 /* UIComponents */,
 			);
@@ -140,14 +137,6 @@
 				480BF7A61F764E0B00C70D6C /* AppLaunch.swift */,
 			);
 			path = API;
-			sourceTree = "<group>";
-		};
-		C77C6E641FD7C7C000217304 /* Extension */ = {
-			isa = PBXGroup;
-			children = (
-				480BF7AA1F76574E00C70D6C /* UIDeviceExtension.swift */,
-			);
-			path = Extension;
 			sourceTree = "<group>";
 		};
 		C7D4DA9F1FE10808007C9E98 /* Internal */ = {
@@ -331,7 +320,6 @@
 				C7D4DAA31FE124B4007C9E98 /* AppLaunchURLBuilder.swift in Sources */,
 				480BF7A91F764FD800C70D6C /* AppLaunchUtils.swift in Sources */,
 				C7D4DAB01FE28856007C9E98 /* PMAlertController.swift in Sources */,
-				480BF7AB1F76574E00C70D6C /* UIDeviceExtension.swift in Sources */,
 				C7D4DAAF1FE28856007C9E98 /* PMAlertAction.swift in Sources */,
 				480BF7A71F764E0B00C70D6C /* AppLaunch.swift in Sources */,
 				480BF7A51F764C7200C70D6C /* AppLaunchConstants.swift in Sources */,

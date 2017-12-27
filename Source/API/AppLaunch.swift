@@ -41,8 +41,6 @@ public class AppLaunch:NSObject{
     
     private var userId:String = String()
     
-    private var features:JSON = JSON.null
-    
     private var URLBuilder:AppLaunchURLBuilder? = nil
     
     // MARK: Initializers
@@ -59,12 +57,13 @@ public class AppLaunch:NSObject{
     public func initializeWithAppGUID (applicationId: String, clientSecret: String, region: String) {
         
         if AppLaunchUtils.validateString(object: clientSecret) &&  AppLaunchUtils.validateString(object: applicationId) && AppLaunchUtils.validateString(object: region){
+            let authManager  = BMSClient.sharedInstance.authorizationManager
             
             self.clientSecret = clientSecret
             self.applicationId = applicationId
             self.region = region
+            self.deviceId = authManager.deviceIdentity.ID!
             AppLaunchCacheManager.sharedInstance.loadDefaultFeatures()
-            self.features = AppLaunchCacheManager.sharedInstance.getFeatures()
             
             if(UserDefaults.standard.value(forKey: USER_ID) != nil){
                 self.userId = UserDefaults.standard.value(forKey: USER_ID) as! String
@@ -72,11 +71,9 @@ public class AppLaunch:NSObject{
                 self.userId = ""
             }
             
-            self.URLBuilder = AppLaunchURLBuilder(region, applicationId)
+            self.URLBuilder = AppLaunchURLBuilder(region, applicationId, deviceId)
             isInitialized = true;
             
-            let authManager  = BMSClient.sharedInstance.authorizationManager
-            self.deviceId = authManager.deviceIdentity.ID!
             AppLaunchUtils.saveValueToNSUserDefaults(value: self.deviceId, key: DEVICE_ID)
         }
         else{
@@ -94,18 +91,18 @@ public class AppLaunch:NSObject{
      
      - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the success information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
      */
-    public func registerWith(userId:String,completionHandler:@escaping AppLaunchCompletionHandler){
+    public func registerWith(userId:String,attributes: JSON? = JSON.null,completionHandler:@escaping AppLaunchCompletionHandler){
         if(isInitialized) {
             
             if(!AppLaunchUtils.userNeedsToBeRegistered(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
                 self.userId = userId
                 completionHandler(AppLaunchResponse(201, MSG__USER_ALREADY_REGISTERED), nil)
             } else {
-                let deviceData:JSON = AppLaunchUtils.getDeviceData(self.deviceId, userId)
+                let registrationData:JSON = AppLaunchUtils.getRegistrationData(self.deviceId, userId, attributes!)
                 let request = AppLaunchInvoker(url: URLBuilder!.getAppRegistrationURL(), method: HttpMethod.POST, timeout: 60)
                 request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
                 request.addHeader(self.clientSecret!, CLIENT_SECRET)
-                request.setJSONRequestBody(deviceData)
+                request.setJSONRequestBody(registrationData)
                 request.setCompletionHandler({(response,error) in
                     if(response != nil){
                         let responseText = response?.responseText ?? ""
@@ -147,7 +144,7 @@ public class AppLaunch:NSObject{
         case is String.Type:
             deviceData[attribute].string = value as? String
             
-        case is Numeric.Type:
+        case is Int.Type:
             deviceData[attribute].number = value as? NSNumber
             
         case is Bool.Type:
@@ -157,7 +154,7 @@ public class AppLaunch:NSObject{
             break
         }
         
-        let request = AppLaunchInvoker(url: (URLBuilder?.getUserURL(self.userId))!, method: HttpMethod.PUT, timeout: 60)
+        let request = AppLaunchInvoker(url: (URLBuilder?.getUserURL())!, method: HttpMethod.PUT, timeout: 60)
         request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
         request.addHeader(self.clientSecret!, CLIENT_SECRET)
         request.setJSONRequestBody(deviceData)
@@ -183,6 +180,35 @@ public class AppLaunch:NSObject{
         
     }
     
+    
+    public func unRegisterDevice(completionHandler:@escaping AppLaunchCompletionHandler){
+        if(isInitialized) {
+            if(AppLaunchUtils.userNeedsToBeRegistered(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
+                completionHandler(AppLaunchResponse(500, "Device Not Registered"), nil)
+            } else {
+                let request = AppLaunchInvoker(url: URLBuilder!.getUserURL(), method: HttpMethod.DELETE, timeout: 60)
+                request.addHeader(self.clientSecret!, CLIENT_SECRET)
+                request.setCompletionHandler({(response,error) in
+                    if(response != nil){
+                        let responseText = response?.responseText ?? ""
+                        let status = response?.statusCode ?? 0
+                        if(status == 204){
+                            // Clear registration data and user defaults
+                            self.isUserRegistered = false
+                            AppLaunchCacheManager.sharedInstance.clearUserDefaults()
+                            completionHandler(AppLaunchResponse(status,responseText), nil)
+                        }else{
+                            completionHandler(nil, AppLaunchFailResponse(status, responseText))
+                        }
+                    }else if let responseError = error{
+                        completionHandler(nil, AppLaunchFailResponse(500,responseError.localizedDescription))
+                    }
+                })
+                request.execute()
+            }
+        }
+    }
+    
     /**
      
      This Methode used to get all the available actions from the IBM Cloud AppLaunch service.
@@ -193,10 +219,9 @@ public class AppLaunch:NSObject{
         
         if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
             
-            let request = AppLaunchInvoker(url: (URLBuilder?.getActionURL(self.userId))!, method: HttpMethod.GET, timeout: 60)
-            request.addHeader(CONTENT_TYPE, APPLICATION_JSON)
+            let request = AppLaunchInvoker(url: (URLBuilder?.getActionURL())!, method: HttpMethod.GET, timeout: 60)
             request.addHeader(self.clientSecret!, CLIENT_SECRET)
-            request.addQueryParameter(self.deviceId, DEVICE_ID)
+            
             request.setCompletionHandler({ (response, error) in
                 if response != nil {
                     let status = response?.statusCode ?? 0
@@ -207,9 +232,9 @@ public class AppLaunch:NSObject{
                             do {
                                 let respJson = try JSON(data: data)
                                 print("response data from server \(responseText)")
-                                AppLaunchCacheManager.sharedInstance.addFeatures(respJson[FEATURES])
-                                self.features = AppLaunchCacheManager.sharedInstance.getFeatures()
-                                completionHandler(AppLaunchResponse(200, nil, respJson[FEATURES]), nil)
+                                AppLaunchCacheManager.sharedInstance.addActions(respJson[FEATURES])
+                                AppLaunchCacheManager.sharedInstance.addActions(respJson[INAPP])
+                                completionHandler(AppLaunchResponse(200, "", respJson), nil)
                             } catch {
                                 completionHandler(nil, AppLaunchFailResponse(404, error.localizedDescription))
                             }
@@ -238,58 +263,31 @@ public class AppLaunch:NSObject{
      Bool value
      */
     public func hasFeatureWith(code:String) -> Bool{
-        var hasFeature = false
-        for(_,feature) in self.features{
-            if let featureCode = feature["code"].string{
-                if featureCode == code{
-                    hasFeature = true
-                }
-            }
+        if(AppLaunchCacheManager.sharedInstance.readJSON(code) != JSON.null) {
+            return true
         }
-        return hasFeature
-    }
-    
-    
-    //has been deprecated
-    public func getValueFor(featureWithCode:String,variableWithCode:String) -> String{
-        for(_,feature) in self.features{
-            if let featureCode = feature["code"].string{
-                if featureCode == featureWithCode{
-                    for(_,variable) in feature["variables"]{
-                        if let varibleCode = variable["code"].string{
-                            if varibleCode == variableWithCode{
-                                return variable["value"].stringValue
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return ""
+        return false
     }
     
     /**
      Returns the value for particular property in a feature
      
      - returns
-     String value of the property
+     String value of the property or Empty string if property/feature doesn't exist
      
      - parameters:
      - featureWithCode: feature code
-     - propertiesWithCode: property code
+     - propertyWithCode: property code
      */
-    public func getValueFor(featureWithCode:String,propertiesWithCode:String) -> String{
-        for(_,feature) in self.features{
-            if let featureCode = feature[CODE].string{
-                if featureCode == featureWithCode{
-                    for(_,variable) in feature[VARIABLES]{
-                        if let varibleCode = variable[CODE].string{
-                            if varibleCode == propertiesWithCode{
-                                return variable[VALUE].stringValue
+    public func getValueFor(featureWithCode:String , propertyWithCode:String) -> String{
+        let feature = AppLaunchCacheManager.sharedInstance.readJSON(featureWithCode)
+        if (feature != JSON.null) {
+                    for(_,property) in feature[PROPERTIES]{
+                        if let propertyCode = property[CODE].string{
+                            if propertyCode == propertyWithCode{
+                                return property[VALUE].stringValue
                             }
                         }
-                    }
-                }
             }
         }
         return ""
@@ -305,16 +303,13 @@ public class AppLaunch:NSObject{
         if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
             
             var metricsData:JSON = JSON()
-            metricsData[DEVICE_ID].string = self.deviceId
-            metricsData[USER_ID].string = self.userId
             metricsData[METRIC_CODES].arrayObject = [code]
-            
             print("metrics payload \(metricsData.description)")
             
-            let request = AppLaunchInvoker(url: (URLBuilder?.getMetricsURL(self.userId))!, method: HttpMethod.POST, timeout: 60)
+            let request = AppLaunchInvoker(url: (URLBuilder?.getMetricsURL())!, method: HttpMethod.POST, timeout: 60)
             request.addHeader(CONTENT_TYPE, APPLICATION_JSON)
             request.addHeader(self.clientSecret!, CLIENT_SECRET)
-            request.addQueryParameter(self.deviceId, DEVICE_ID)
+            request.setJSONRequestBody(metricsData)
             request.setCompletionHandler({(response,error) in
                 
                 let status = response?.statusCode ?? 0
@@ -343,10 +338,9 @@ public class AppLaunch:NSObject{
     public func getDynamicContent(autoRenderUI:Bool, completionHandler: @escaping AppLaunchCompletionHandler) -> Void {
         if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
             
-            let request = AppLaunchInvoker(url: (URLBuilder?.getInAppMessagingURL(self.userId))!, method: HttpMethod.GET, timeout: 60)
+            let request = AppLaunchInvoker(url: (URLBuilder?.getInAppMessagingURL())!, method: HttpMethod.GET, timeout: 60)
             request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
             request.addHeader(self.clientSecret!, CLIENT_SECRET)
-            request.addQueryParameter(self.deviceId, DEVICE_ID)
             request.setCompletionHandler({(response, error) in
                 if response != nil {
                     let status = response?.statusCode ?? 0

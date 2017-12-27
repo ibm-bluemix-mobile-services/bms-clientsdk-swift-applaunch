@@ -28,9 +28,29 @@ internal class AppLaunchCacheManager {
         userDefaults.synchronize()
     }
     
-    func readString(_ key: String) -> JSON{
-        let data = userDefaults.object(forKey: key) as! String
-        return JSON.init(parseJSON: data)
+    func readString(_ key:String) -> String {
+        if (userDefaults.value(forKey: key) != nil) {
+            return userDefaults.value(forKey: key) as! String
+        }
+        return ""
+    }
+    
+    func clearString(_ key:String) -> Void {
+        userDefaults.removeObject(forKey: key)
+        userDefaults.synchronize()
+    }
+    
+    func clearUserDefaults() -> Void {
+       // Clears registration data and features from User defaults
+        UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
+    }
+    
+    func readJSON(_ key: String) -> JSON{
+        if (userDefaults.object(forKey: key) != nil) {
+            let data = userDefaults.object(forKey: key) as! String
+            return JSON.init(parseJSON: data)
+        }
+        return JSON.null
     }
     
     func loadDefaultFeatures() -> Void {
@@ -43,33 +63,24 @@ internal class AppLaunchCacheManager {
             }
             for file in filteredfileList {
                 let JSON = getFeatureFromFile(fileName: file)
-                addFeatureToCache(JSON!)
+                addActionToCache(JSON!)
             }
         } catch {
             print(error)
         }
     }
     
-    func addFeatures(_ features: JSON){
-        for (_, feature) in features {
-            addFeatureToCache(feature)
+    func addActions(_ actions: JSON){
+        for (_, action) in actions {
+            addActionToCache(action)
         }
     }
     
-    func getFeatures() -> JSON {
-        var feature = [JSON]()
-        let featurecodes = userDefaults.stringArray(forKey: FEATURES)
-        for code in featurecodes! {
-            feature.append(readString(code))
-        }
-        return JSON(feature)
-    }
-    
-    private func addFeatureToCache(_ feature: JSON) -> Void{
+    private func addActionToCache(_ action: JSON) -> Void{
         lock.lock()
         defer {lock.unlock()}
-        if (feature != JSON.null) {
-            addString(feature.rawString()!,feature[CODE].string!)
+        if (action != JSON.null) {
+            addString(action.rawString()!,action[CODE].string!)
         }
     }
     

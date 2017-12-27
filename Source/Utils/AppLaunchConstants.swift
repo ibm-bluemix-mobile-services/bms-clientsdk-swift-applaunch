@@ -34,6 +34,8 @@ internal let APP_NAME:String = "appName"
 
 internal let USER_ID:String = "userId"
 
+internal let ATTRIBUTES:String = "attributes"
+
 internal let APPLE:String = "Apple"
 
 internal let BUTTONS:String = "buttons"
@@ -66,11 +68,11 @@ internal let NAME:String = "name"
 
 internal let CODE:String = "code"
 
-internal let FEATURES:String = "AppLaunchFeatures"
+internal let FEATURES:String = "features"
 
 internal let TEMPLATE_TYPE:String = "templateType"
 
-internal let VARIABLES:String = "variables"
+internal let PROPERTIES:String = "properties"
 
 internal let VALUE:String = "value"
 
@@ -81,6 +83,8 @@ internal let TITLE:String = "title"
 internal let SUB_TITLE:String = "subTitle"
 
 internal let IMAGE_URL:String = "imageUrl"
+
+internal let INAPP:String = "inApp"
 
 /**
  Constants and TypeAlias which are available in AppLaunch SDK
