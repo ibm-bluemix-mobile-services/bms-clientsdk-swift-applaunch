@@ -233,7 +233,7 @@ public class AppLaunch:NSObject{
                                 let respJson = try JSON(data: data)
                                 print("response data from server \(responseText)")
                                 AppLaunchCacheManager.sharedInstance.addActions(respJson[FEATURES])
-                                AppLaunchCacheManager.sharedInstance.addActions(respJson[INAPP])
+                             AppLaunchCacheManager.sharedInstance.addInAppActionToCache(respJson[INAPP])
                                 completionHandler(AppLaunchResponse(200, "", respJson), nil)
                             } catch {
                                 completionHandler(nil, AppLaunchFailResponse(404, error.localizedDescription))
@@ -307,7 +307,7 @@ public class AppLaunch:NSObject{
             print("metrics payload \(metricsData.description)")
             
             let request = AppLaunchInvoker(url: (URLBuilder?.getMetricsURL())!, method: HttpMethod.POST, timeout: 60)
-            request.addHeader(CONTENT_TYPE, APPLICATION_JSON)
+            request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
             request.addHeader(self.clientSecret!, CLIENT_SECRET)
             request.setJSONRequestBody(metricsData)
             request.setCompletionHandler({(response,error) in
@@ -335,48 +335,23 @@ public class AppLaunch:NSObject{
      
      - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the InApp Messaging information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
      */
-    public func getDynamicContent(autoRenderUI:Bool, completionHandler: @escaping AppLaunchCompletionHandler) -> Void {
+    public func getInAppContent(autoRenderUI:Bool, completionHandler: @escaping AppLaunchCompletionHandler) -> Void {
         if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
-            
-            let request = AppLaunchInvoker(url: (URLBuilder?.getInAppMessagingURL())!, method: HttpMethod.GET, timeout: 60)
-            request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
-            request.addHeader(self.clientSecret!, CLIENT_SECRET)
-            request.setCompletionHandler({(response, error) in
-                if response != nil {
-                    let status = response?.statusCode ?? 0
-                    let responseText = response?.responseText ?? ""
-                    if(status == 200 || status == 201){
-                        if let data = responseText.data(using: String.Encoding.utf8) {
-                            do {
-                                let respJson = try JSON(data: data)
-                                if(autoRenderUI){
-                                    let template : String = respJson[TEMPLATE_TYPE].stringValue
-                                    switch(template){
-                                    case MessageType.Banner.rawValue:
-                                        AppLaunchInAppMessaging(respJson).ShowBanner()
-                                        break
-                                    default :
-                                        break
-                                    }
-                                }else{
-                                    completionHandler(AppLaunchResponse(200, responseText), nil)
-                                }
-                            } catch {
-                                completionHandler(nil, AppLaunchFailResponse(404, error.localizedDescription))
-                            }
-                        }
-                    }else{
-                        print("[404] Actions Not found")
-                        completionHandler(nil, AppLaunchFailResponse(status, responseText))
+            let InAppActions = AppLaunchCacheManager.sharedInstance.readJSON(INAPP)
+            if(autoRenderUI){
+                for (_, action) in InAppActions {
+                    let layout : String = action[Layout_Type].stringValue
+                    switch(layout){
+                    case MessageType.Banner.rawValue:
+                        AppLaunchInAppMessaging(action).ShowBanner()
+                        break
+                    default :
+                        break
                     }
-                    
-                }else {
-                    completionHandler(nil, AppLaunchFailResponse(500, "Error while getting message from captivate service"))
                 }
-            })
-            request.execute()
-        }else{
-             completionHandler(nil, AppLaunchFailResponse(500, MSG__ERR_NOT_REG_NOT_INIT))
+            }else{
+                completionHandler(AppLaunchResponse(200, nil, InAppActions), nil)
+            }
         }
     }
     

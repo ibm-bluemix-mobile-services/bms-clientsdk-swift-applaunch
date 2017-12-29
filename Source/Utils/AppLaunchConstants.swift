@@ -60,6 +60,10 @@ internal let TRUE = "true"
 
 internal let METRIC_CODES = "metricCodes"
 
+internal let METRICS = "metrics"
+
+internal let ACTION = "action"
+
 internal let CLIENT_SECRET = "clientSecret"
 
 internal let REGION = "region"
@@ -70,7 +74,7 @@ internal let CODE:String = "code"
 
 internal let FEATURES:String = "features"
 
-internal let TEMPLATE_TYPE:String = "templateType"
+internal let Layout_Type:String = "layout"
 
 internal let PROPERTIES:String = "properties"
 
@@ -80,7 +84,7 @@ internal let CONTENT:String = "content"
 
 internal let TITLE:String = "title"
 
-internal let SUB_TITLE:String = "subTitle"
+internal let SUB_TITLE:String = "subtitle"
 
 internal let IMAGE_URL:String = "imageUrl"
 

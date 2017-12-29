@@ -84,6 +84,14 @@ internal class AppLaunchCacheManager {
         }
     }
     
+    func addInAppActionToCache(_ action: JSON) -> Void{
+        lock.lock()
+        defer {lock.unlock()}
+        if (action != JSON.null) {
+            addString(action.rawString()!, INAPP)
+        }
+    }
+    
     private func getFeatureFromFile(fileName: String) -> JSON? {
         let filePath = Bundle.main.url(forResource: fileName.replacingOccurrences(of: JSON_PATH_EXTENSION, with: ""), withExtension: JSON_NAME)
         if (filePath != nil && validateFilePath(filePath!)) {
