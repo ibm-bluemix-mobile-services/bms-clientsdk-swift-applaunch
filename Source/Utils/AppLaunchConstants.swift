@@ -74,7 +74,9 @@ internal let CODE:String = "code"
 
 internal let FEATURES:String = "features"
 
-internal let Layout_Type:String = "layout"
+internal let LAYOUT:String = "layout"
+
+internal let TRIGGERS:String = "triggers"
 
 internal let PROPERTIES:String = "properties"
 

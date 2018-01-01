@@ -44,7 +44,4 @@ internal class AppLaunchURLBuilder {
         return getAppRegistrationURL() + FORWARDSLASH + deviceID + EVENTS + METRICS
     }
     
-    func getInAppMessagingURL() -> String {
-        return getAppRegistrationURL() + FORWARDSLASH + deviceID + "/captivateengine/inappmsg"
-    }
 }

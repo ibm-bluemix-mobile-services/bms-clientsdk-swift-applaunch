@@ -14,7 +14,7 @@ import SwiftyJSON
 
 /**
  A singleton that serves as an entry point to IBM Cloud AppLaunch service communication.
-*/
+ */
 public class AppLaunch:NSObject{
     
     // MARK: Properties
@@ -64,6 +64,7 @@ public class AppLaunch:NSObject{
             self.region = region
             self.deviceId = authManager.deviceIdentity.ID!
             AppLaunchCacheManager.sharedInstance.loadDefaultFeatures()
+            displayInAppActions()
             
             if(UserDefaults.standard.value(forKey: USER_ID) != nil){
                 self.userId = UserDefaults.standard.value(forKey: USER_ID) as! String
@@ -233,7 +234,7 @@ public class AppLaunch:NSObject{
                                 let respJson = try JSON(data: data)
                                 print("response data from server \(responseText)")
                                 AppLaunchCacheManager.sharedInstance.addActions(respJson[FEATURES])
-                             AppLaunchCacheManager.sharedInstance.addInAppActionToCache(respJson[INAPP])
+                                AppLaunchCacheManager.sharedInstance.addInAppActionToCache(respJson[INAPP])
                                 completionHandler(AppLaunchResponse(200, "", respJson), nil)
                             } catch {
                                 completionHandler(nil, AppLaunchFailResponse(404, error.localizedDescription))
@@ -282,12 +283,12 @@ public class AppLaunch:NSObject{
     public func getValueFor(featureWithCode:String , propertyWithCode:String) -> String{
         let feature = AppLaunchCacheManager.sharedInstance.readJSON(featureWithCode)
         if (feature != JSON.null) {
-                    for(_,property) in feature[PROPERTIES]{
-                        if let propertyCode = property[CODE].string{
-                            if propertyCode == propertyWithCode{
-                                return property[VALUE].stringValue
-                            }
-                        }
+            for(_,property) in feature[PROPERTIES]{
+                if let propertyCode = property[CODE].string{
+                    if propertyCode == propertyWithCode{
+                        return property[VALUE].stringValue
+                    }
+                }
             }
         }
         return ""
@@ -324,7 +325,7 @@ public class AppLaunch:NSObject{
         }else{
             print(MSG__ERR_METRICS_NOT_INIT)
         }
-
+        
     }
     
     /**
@@ -340,18 +341,61 @@ public class AppLaunch:NSObject{
             let InAppActions = AppLaunchCacheManager.sharedInstance.readJSON(INAPP)
             if(autoRenderUI){
                 for (_, action) in InAppActions {
-                    let layout : String = action[Layout_Type].stringValue
-                    switch(layout){
-                    case MessageType.Banner.rawValue:
-                        AppLaunchInAppMessaging(action).ShowBanner()
-                        break
-                    default :
-                        break
-                    }
+                    displayInAppMessage(action)
                 }
             }else{
                 completionHandler(AppLaunchResponse(200, nil, InAppActions), nil)
             }
+        }
+    }
+    
+    private func displayInAppMessage(_ action: JSON) -> Void {
+        let layout : String = action[LAYOUT].stringValue
+        switch(layout){
+        case MessageType.Banner.rawValue:
+            AppLaunchInAppMessaging(action).ShowBanner()
+            break
+        default :
+            break
+        }
+    }
+    
+    private func displayInAppActions() -> Void {
+        let InAppActions = AppLaunchCacheManager.sharedInstance.readJSON(INAPP)
+        for (_, action) in InAppActions {
+            let trigger : String = action[TRIGGERS][0][ACTION].stringValue
+            switch(trigger){
+            case TriggerType.EveryLaunch.rawValue :
+                displayInAppMessage(action)
+                break
+            case TriggerType.FirstLaunch.rawValue :
+                let previousDateString = AppLaunchCacheManager.sharedInstance.readString(trigger).isEmpty ? "0" : AppLaunchCacheManager.sharedInstance.readString(trigger)
+                let previousDate = Int(previousDateString)!
+                let currentDate = AppLaunchUtils.getCurrentDate()
+                // Check if date changed or not
+                if(currentDate > previousDate) {
+                    displayInAppMessage(action)
+                    AppLaunchCacheManager.sharedInstance.addString(String(AppLaunchUtils.getCurrentDate()), trigger)
+                }
+                break
+            case TriggerType.EveryAlternateLaunch.rawValue :
+                if(AppLaunchCacheManager.sharedInstance.readString(trigger).isEmpty) {
+                    displayInAppMessage(action)
+                    AppLaunchCacheManager.sharedInstance.addString(trigger, trigger)
+                } else {
+                    AppLaunchCacheManager.sharedInstance.clearString(trigger)
+                }
+                break
+            case TriggerType.OnceAndOnlyOnce.rawValue :
+                if(AppLaunchCacheManager.sharedInstance.readString(trigger).isEmpty) {
+                    displayInAppMessage(action)
+                    AppLaunchCacheManager.sharedInstance.addString(trigger, trigger)
+                }
+                break
+            default :
+                break
+            }
+            displayInAppMessage(action)
         }
     }
     

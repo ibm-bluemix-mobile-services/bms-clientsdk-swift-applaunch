@@ -14,22 +14,11 @@ internal class AppLaunchInAppMessaging: NSObject {
     private let action: MessageData
     
     init(_ data: JSON) {
-        self.action = MessageData.init(data[TITLE].stringValue, data[SUB_TITLE].stringValue, data[IMAGE_URL].stringValue, data["layout"].stringValue, data["buttons"]);
+        self.action = MessageData.init(data[TITLE].stringValue, data[SUB_TITLE].stringValue,  Data(base64Encoded: data[IMAGE_URL].stringValue, options: .ignoreUnknownCharacters)!, data["layout"].stringValue, data["buttons"]);
     }
     
     func ShowBanner() -> Void {
-        var imageData:NSData
-        do {
-            if(!action.getImageUrl().isEmpty){
-                imageData = try NSData(contentsOf: URL(string: action.getImageUrl())!)
-            }else{
-                imageData = NSData()
-            }
-        } catch  {
-            imageData = NSData()
-        }
-        
-        let alertVC = PMAlertController(title: action.getTitle(), description: action.getSubTitle(), image: UIImage(data: imageData as Data ), style: .walkthrough)  //.alert is smaller version
+        let alertVC = PMAlertController(title: action.getTitle(), description: action.getSubTitle(), image: UIImage(data: action.getImage()), style: .walkthrough)  //.alert is smaller version
         
         for button in action.getButtonDataList() {
             alertVC.addAction(PMAlertAction(title: button.getButtonName(), style: .default, action: { () -> Void in
@@ -56,17 +45,24 @@ internal enum MessageType : String {
     case Banner = "banner"
 }
 
+internal enum TriggerType : String {
+    case FirstLaunch = "OnFirstAppLaunch"
+    case EveryLaunch = "OnEveryAppLaunch"
+    case EveryAlternateLaunch = "OnEveryAlternateAppLaunch"
+    case OnceAndOnlyOnce = "OnceAndOnlyOnce"
+}
+
 internal class MessageData {
-    private var imageUrl:String
+    private var image:Data
     private var title:String
     private var subTitle:String
     private var buttonData:[ButtonData]?
     private var layout:String
     
-    init(_ title:String,_ subTitle:String,_ imageUrl:String,_ layout:String,_ buttonData:JSON) {
+    init(_ title:String,_ subTitle:String,_ image:Data,_ layout:String,_ buttonData:JSON) {
         self.title = title
         self.subTitle = subTitle
-        self.imageUrl = imageUrl
+        self.image = image
         self.layout = layout
         self.buttonData = processButtons(buttonData)
     }
@@ -79,10 +75,10 @@ internal class MessageData {
         }
         return list
     }
-
     
-    func getImageUrl() -> String {
-        return imageUrl
+    
+    func getImage() -> Data {
+        return image
     }
     
     func getTitle() -> String {
@@ -111,17 +107,17 @@ internal class ButtonData {
         self.action = action
         self.metrics = metrics
     }
-   
+    
     func getButtonName() -> String {
-    return buttonName
+        return buttonName
     }
     
     func getMetrics() -> JSON {
-    return metrics
+        return metrics
     }
     
     func getAction() -> String {
-    return action
+        return action
     }
     
 }

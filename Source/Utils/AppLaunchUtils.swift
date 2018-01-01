@@ -65,5 +65,11 @@ internal class AppLaunchUtils:NSObject{
         }
         return true
     }
-
+    
+    class func getCurrentDate() -> Int {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd"
+        return Int(formatter.string(from: Date()))!
+    }
+    
 }

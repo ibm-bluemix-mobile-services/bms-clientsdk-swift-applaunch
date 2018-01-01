@@ -41,7 +41,7 @@ internal class AppLaunchCacheManager {
     }
     
     func clearUserDefaults() -> Void {
-       // Clears registration data and features from User defaults
+        // Clears registration data and features from User defaults
         UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
     }
     
@@ -84,12 +84,26 @@ internal class AppLaunchCacheManager {
         }
     }
     
-    func addInAppActionToCache(_ action: JSON) -> Void{
+    func addInAppActionToCache(_ actions: JSON) -> Void{
         lock.lock()
         defer {lock.unlock()}
-        if (action != JSON.null) {
-            addString(action.rawString()!, INAPP)
+        var data = [JSON]()
+        for (_, action) in actions {
+            var imageData:NSData
+            var json = action
+            do {
+                if(!action[IMAGE_URL].stringValue.isEmpty){
+                    imageData = try NSData(contentsOf: URL(string: action[IMAGE_URL].stringValue)!)
+                }else{
+                    imageData = NSData()
+                }
+            } catch  {
+                imageData = NSData()
+            }
+            json[IMAGE_URL].stringValue = imageData.base64EncodedString(options: .lineLength64Characters)
+            data.append(json)
         }
+        addString(JSON(data).rawString()!, INAPP)
     }
     
     private func getFeatureFromFile(fileName: String) -> JSON? {
