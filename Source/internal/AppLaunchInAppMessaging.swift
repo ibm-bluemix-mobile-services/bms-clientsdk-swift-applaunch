@@ -12,31 +12,31 @@ import SwiftyJSON
 internal class AppLaunchInAppMessaging: NSObject {
     
     private let action: MessageData
+    private let BUTTONS:String = "buttons"
+    private let TITLE:String = "title"
+    private let SUB_TITLE:String = "subtitle"
+    
     
     init(_ data: JSON) {
-        self.action = MessageData.init(data[TITLE].stringValue, data[SUB_TITLE].stringValue,  Data(base64Encoded: data[IMAGE_URL].stringValue, options: .ignoreUnknownCharacters)!, data["layout"].stringValue, data["buttons"]);
+        self.action = MessageData.init(data[TITLE].stringValue, data[SUB_TITLE].stringValue,  Data(base64Encoded: data[IMAGE_URL].stringValue, options: .ignoreUnknownCharacters)!, data[LAYOUT].stringValue, data[BUTTONS]);
     }
     
     func ShowBanner() -> Void {
-        let alertVC = PMAlertController(title: action.getTitle(), description: action.getSubTitle(), image: UIImage(data: action.getImage()), style: .walkthrough)  //.alert is smaller version
+        let BannerVC = PMAlertController(title: action.getTitle(), description: action.getSubTitle(), image: UIImage(data: action.getImage()), style: .walkthrough)  //.alert is smaller version
         
         for button in action.getButtonDataList() {
-            alertVC.addAction(PMAlertAction(title: button.getButtonName(), style: .default, action: { () -> Void in
-                let buttonType = "invoke-function"
-                switch(buttonType){
-                case "navigate":
-                    break
-                case "invoke-function":
-                    let metric = button.getMetrics()
-                    print(metric[0][CODE])
-                    AppLaunch.sharedInstance.sendMetricsWith(code: metric[0][CODE].stringValue)
-                    break
-                default: break
+            BannerVC.addAction(PMAlertAction(title: button.getButtonName(), style: .default, action: { () -> Void in
+                let metrics = button.getMetrics()
+                var codes = [String]()
+                for (_, metric) in metrics {
+                    codes.append(metric[CODE].stringValue)
+                }
+                if (!codes.isEmpty) {
+                    AppLaunch.sharedInstance.sendMetricsWith(codes: codes)
                 }
             }))
         }
-        
-        alertVC.show()
+        BannerVC.show()
     }
 }
 

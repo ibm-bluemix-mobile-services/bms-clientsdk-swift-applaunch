@@ -8,6 +8,41 @@
 
 import Foundation
 
+/**
+ Enum and TypeAlias which are available in AppLaunch SDK
+ */
+
+/**
+ `ICRegion` is an enumerator which can be used to specify IBM Cloud region where AppLaunch Service is hosted.
+ */
+public enum ICRegion : String {
+    
+    case US_SOUTH = ".us-south.containers.mybluemix.net"
+    
+    case UNITED_KINGDOM = ".eu-gb.containers.mybluemix.net"
+    
+    case SYDNEY = ".sydney.containers.mybluemix.net"
+    
+    case US_SOUTH_STAGING = "-staging.us-south.containers.mybluemix.net"
+    
+    case UNITED_KINGDOM_STAGING = "-staging.eu-gb.containers.mybluemix.net"
+    
+    case SYDNEY_STAGING = "-staging.sydney.containers.mybluemix.net"
+    
+    case US_SOUTH_DEV = "-dev.us-south.containers.mybluemix.net"
+    
+    case UNITED_KINGDOM_DEV = "-dev.eu-gb.containers.mybluemix.net"
+    
+    case SYDNEY_DEV = "-dev.sydney.containers.mybluemix.net"
+    
+}
+
+/**
+ `AppLaunchCompletionHandler` is a callback for AppLaunch REST APIs.
+ */
+public typealias AppLaunchCompletionHandler = (_ Response:AppLaunchResponse?, _ Error:AppLaunchFailResponse? ) -> Void
+
+
 //
 // ─── INTERNAL CONSTANTS ───────────────────────────────────────────────────────────
 //
@@ -17,12 +52,6 @@ internal let APPLICATION_ID:String = "applicationId"
 internal let IOS:String = "iOS"
 
 internal let DEVICE_ID:String = "deviceId"
-
-internal let MODEL:String = "model"
-
-internal let BRAND:String = "brand"
-
-internal let OS_VERSION:String = "OSVersion"
 
 internal let PLATFORM:String = "platform"
 
@@ -36,27 +65,9 @@ internal let USER_ID:String = "userId"
 
 internal let ATTRIBUTES:String = "attributes"
 
-internal let APPLE:String = "Apple"
-
-internal let BUTTONS:String = "buttons"
-
-internal let BUTTON_NAME:String = "buttonName"
-
-internal let BUTTON_TYPE:String = "buttonType"
-
-internal let BUTTON_VALUE:String = "buttonValue"
-
-internal let INVOKE_FUNCTION:String = "invoke-function"
-
-internal let NAVIGATE:String = "navigate"
-
 internal let APPLICATION_JSON = "application/json; charset = UTF-8"
 
 internal let CONTENT_TYPE = "Content-Type"
-
-internal let IS_USER_REGISTERED = "IS_USER_REGISTERED"
-
-internal let TRUE = "true"
 
 internal let METRIC_CODES = "metricCodes"
 
@@ -74,48 +85,16 @@ internal let CODE:String = "code"
 
 internal let FEATURES:String = "features"
 
-internal let LAYOUT:String = "layout"
-
 internal let TRIGGERS:String = "triggers"
 
 internal let PROPERTIES:String = "properties"
 
 internal let VALUE:String = "value"
 
-internal let CONTENT:String = "content"
-
-internal let TITLE:String = "title"
-
-internal let SUB_TITLE:String = "subtitle"
+internal let INAPP:String = "inApp"
 
 internal let IMAGE_URL:String = "imageUrl"
 
-internal let INAPP:String = "inApp"
+internal let LAYOUT:String = "layout"
 
-/**
- Constants and TypeAlias which are available in AppLaunch SDK
- */
-
-public let US_SOUTH:String = ".us-south.containers.mybluemix.net"
-
-public let UNITED_KINGDOM:String = ".eu-gb.containers.mybluemix.net"
-
-public let SYDNEY:String = ".sydney.containers.mybluemix.net"
-
-public let US_SOUTH_STAGING:String = "-staging.us-south.containers.mybluemix.net"
-
-public let UNITED_KINGDOM_STAGING:String = "-staging.eu-gb.containers.mybluemix.net"
-
-public let SYDNEY_STAGING:String = "-staging.sydney.containers.mybluemix.net"
-
-public let US_SOUTH_DEV:String = "-dev.us-south.containers.mybluemix.net"
-
-public let UNITED_KINGDOM_DEV:String = "-dev.eu-gb.containers.mybluemix.net"
-
-public let SYDNEY_DEV:String = "-dev.sydney.containers.mybluemix.net"
-
-/**
- `AppLaunchCompletionHandler` is a callback for AppLaunch REST APIs.
- */
-public typealias AppLaunchCompletionHandler = (_ Response:AppLaunchResponse?, _ Error:AppLaunchFailResponse? ) -> Void
 

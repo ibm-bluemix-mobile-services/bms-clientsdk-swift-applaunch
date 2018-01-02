@@ -25,6 +25,6 @@ internal let MSG__CLIENT_OR_APPID_NOT_VALID = "Error while initializing - Client
 
 internal let MSG__ERR_GET_ACTIONS = "Error while getting actions"
 
-internal let MSG__ERR_NOT_REG_NOT_INIT = "Error while getting actions. AppLaunch is not initialized or the user is not registered. Register the user before requesting for actions"
+internal let MSG__ERR_NOT_REG_NOT_INIT = "AppLaunch is not initialized or the user is not registered. Register the user before requesting for actions"
 
 internal let MSG__ERR_METRICS_NOT_INIT = "Error while sending metrics. AppLaunch is not initialized or the user is not registered. Register the user before sending metrics"
