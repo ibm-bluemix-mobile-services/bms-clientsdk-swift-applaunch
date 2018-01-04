@@ -26,6 +26,7 @@ internal class AppLaunchInvoker: NSObject {
     }
     
     func execute() {
+        headers.updateValue("78ccd791-60a7-4582-8915-e161e419165c", forKey: "X-AppLaunch-Service-Token")
         let request = Request(url: url, method: method, headers: headers, queryParameters: queryParameters, timeout: timeout)
         if (requestBody != nil) {
             request.send(requestBody: requestBody, completionHandler: completionHandler)

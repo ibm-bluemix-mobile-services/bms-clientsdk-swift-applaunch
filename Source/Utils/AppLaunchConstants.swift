@@ -37,6 +37,28 @@ public enum ICRegion : String {
     
 }
 
+public enum RefreshPolicy : Int {
+    
+    case REFRESH_ON_EVERY_START = 0
+    
+    case REFRESH_ON_EXPIRY = 1
+    
+    case BACKGROUND_REFRESH = 2
+    
+}
+
+public enum ErrorCode : Int {
+    
+    case REGISTRATION_FAILURE = 0
+    
+    case FETCH_ACTIONS_FAILURE = 1
+    
+    case DEFAULT_FEATURE_LOAD_FAILURE = 3
+    
+    case UNREGISTRATION_FAILURE = 4
+    
+}
+
 /**
  `AppLaunchCompletionHandler` is a callback for AppLaunch REST APIs.
  */

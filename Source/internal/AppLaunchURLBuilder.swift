@@ -18,7 +18,8 @@ internal class AppLaunchURLBuilder {
     private let ACTIONS = "/actions"
     private let EVENTS = "/events"
     private let METRICS = "/metrics"
-    private let MOBILESERVICES:String = "http://mobileservices"
+    private let SESSIONACTIVITY = "/sessionActivity"
+    private let MOBILESERVICES:String = "http://mobileservices-staging"
     private let APPLAUNCH_CONTEXT:String = "/applaunch/v1"
     
     
@@ -42,6 +43,10 @@ internal class AppLaunchURLBuilder {
     
     func getMetricsURL() -> String {
         return getAppRegistrationURL() + FORWARDSLASH + deviceID + EVENTS + METRICS
+    }
+    
+    func getSessionURL() -> String {
+        return getAppRegistrationURL() + FORWARDSLASH + deviceID + EVENTS + SESSIONACTIVITY
     }
     
 }

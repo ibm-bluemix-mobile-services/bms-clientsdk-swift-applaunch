@@ -15,30 +15,22 @@ import SwiftyJSON
 /**
  A singleton that serves as an entry point to IBM Cloud AppLaunch service communication.
  */
-public class AppLaunch:NSObject{
+public class AppLaunch: NSObject {
     
     // MARK: Properties
     
     /// This singleton should be used for all `AppLaunch` activity.
     public static let sharedInstance = AppLaunch()
     
-    private var clientSecret: String?
-    
-    private var applicationId: String?
-    
-    private var region: String?
-    
-    private var deviceId = String()
-    
-    private var bmsClient = BMSClient.sharedInstance
-    
     private var isInitialized = false
     
     private var isUserRegistered = false
     
-    private var userId:String = String()
+    private var URLBuilder: AppLaunchURLBuilder? = nil
     
-    private var URLBuilder:AppLaunchURLBuilder? = nil
+    private var user: AppLaunchUser!
+    
+    private var config: AppLaunchConfig!
     
     // MARK: Initializers
     
@@ -51,27 +43,49 @@ public class AppLaunch:NSObject{
      - parameter clientSecret: clientSecret appLaunch client secret value
      - parameter region: IBM Cloud region suffix specifies the location where the AppLaunch service is hosted
      */
-    public func initializeWithAppGUID (applicationId: String, clientSecret: String, region: ICRegion) {
+    public func initialize(region: ICRegion, appId: String, clientSecret: String, config: AppLaunchConfig, user: AppLaunchUser, completionHandler: @escaping AppLaunchCompletionHandler) {
         
-        if AppLaunchUtils.validateString(object: clientSecret) &&  AppLaunchUtils.validateString(object: applicationId){
-            let authManager  = BMSClient.sharedInstance.authorizationManager
-            self.clientSecret = clientSecret
-            self.applicationId = applicationId
-            self.region = region.rawValue
-            self.deviceId = authManager.deviceIdentity.ID!
-            AppLaunchCacheManager.sharedInstance.loadDefaultFeatures()
-            displayInAppActions()
-            if(!AppLaunchCacheManager.sharedInstance.readString(USER_ID).isEmpty){
-                self.userId = AppLaunchCacheManager.sharedInstance.readString(USER_ID)
-            } else {
-                self.userId = ""
-            }
-            self.URLBuilder = AppLaunchURLBuilder(region.rawValue, applicationId, deviceId)
-            isInitialized = true;
-            AppLaunchCacheManager.sharedInstance.addString(self.deviceId, DEVICE_ID)
+        if AppLaunchUtils.validateString(object: clientSecret) &&  AppLaunchUtils.validateString(object: appId) && AppLaunchUtils.validateString(object: user.getUserId() ){
+            config.setICRegion(region.rawValue)
+            config.setAppID(appId)
+            config.setClientSecret(clientSecret)
+            self.config = config
+            self.user = user
+            self.URLBuilder = AppLaunchURLBuilder(config.getICRegion(), config.getAppID(), config.getDeviceID())
+            AppLaunchCacheManager.sharedInstance.loadDefaultFeatures(completionHandler)
+            IntializeSession()
+            // processInAppActions()
+            //Register User
+            registerDevice(completionHandler)
+            isInitialized = true
         }
         else{
             print(MSG__CLIENT_OR_APPID_NOT_VALID)
+        }
+    }
+    
+    public func destroy(completionHandler: @escaping AppLaunchCompletionHandler) {
+        if(isInitialized) {
+            let request = AppLaunchInvoker(url: URLBuilder!.getUserURL(), method: HttpMethod.DELETE, timeout: 60)
+            request.addHeader(config.getClientSecret(), CLIENT_SECRET)
+            request.setCompletionHandler({(response,error) in
+                if(response != nil){
+                    let responseText = response?.responseText ?? ""
+                    let status = response?.statusCode ?? 0
+                    if(status == 204){
+                        // Clear registration data and actions
+                        self.isUserRegistered = false
+                        AppLaunchCacheManager.sharedInstance.clearUserDefaults()
+                    }else{
+                        completionHandler(nil, AppLaunchFailResponse(.UNREGISTRATION_FAILURE, responseText))
+                    }
+                }else {
+                    completionHandler(nil, AppLaunchFailResponse(.UNREGISTRATION_FAILURE, (error?.localizedDescription)!))
+                }
+            })
+            request.execute()
+        } else {
+            completionHandler(nil, AppLaunchFailResponse(.UNREGISTRATION_FAILURE, "AppLaunch SDK is not Initialized"))
         }
     }
     
@@ -86,116 +100,41 @@ public class AppLaunch:NSObject{
      
      - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the success information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
      */
-    public func registerDevice(userId: String, attributes: JSON? = JSON.null, completionHandler:@escaping AppLaunchCompletionHandler){
-        if(isInitialized) {
-            
-            if(!AppLaunchUtils.userNeedsToBeRegistered(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
-                self.userId = userId
-                completionHandler(AppLaunchResponse(201, MSG__USER_ALREADY_REGISTERED), nil)
-            } else {
-                let registrationData:JSON = AppLaunchUtils.getRegistrationData(self.deviceId, userId, attributes!)
-                let request = AppLaunchInvoker(url: URLBuilder!.getAppRegistrationURL(), method: HttpMethod.POST, timeout: 60)
-                request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
-                request.addHeader(self.clientSecret!, CLIENT_SECRET)
-                request.setJSONRequestBody(registrationData)
-                request.setCompletionHandler({(response,error) in
-                    if(response != nil){
-                        let responseText = response?.responseText ?? ""
-                        let status = response?.statusCode ?? 0
-                        if(status == 200 || status == 201){
-                            self.isUserRegistered = true
-                            self.userId = userId
-                            AppLaunchUtils.saveUserContext(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)
-                            completionHandler(AppLaunchResponse(status,responseText), nil)
-                        }else{
-                            completionHandler(nil, AppLaunchFailResponse(status, responseText))
-                            self.isUserRegistered = false
-                        }
-                    }else if let responseError = error{
-                        completionHandler(nil, AppLaunchFailResponse(500,responseError.localizedDescription))
-                    }
-                })
-                request.execute()
+    private func registerDevice(_ completionHandler: @escaping AppLaunchCompletionHandler){
+        if(!AppLaunchUtils.userNeedsToBeRegistered(user.getUserId(), config.getAppID(), config.getDeviceID(), config.getICRegion()) && !AppLaunchUtils.isUpdateRegistrationRequired(user.getUserId(), config.getAppID(), config.getDeviceID(), config.getICRegion(), user.getAttributes()) ) {
+            // User Already Registered, Proceed with getActions Call
+            Analytics.userIdentity = user.getUserId()
+            getActions(completionHandler)
+        } else {
+            var method:HttpMethod = HttpMethod.POST
+            if AppLaunchUtils.isUpdateRegistrationRequired(user.getUserId(), config.getAppID(), config.getDeviceID(), config.getICRegion(), user.getAttributes()) {
+                // Update Registration Call
+                method = HttpMethod.PUT
             }
-        }
-    }
-    
-    /**
-     
-     This Methode used to update the user information in the IBM Cloud AppLaunch service.
-     
-     - Parameter userID: This is the userId value.
-     - Parameter attribute: This is the attribute value.
-     
-     - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the success information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
-     */
-    public func updateDevice(userId: String, attributes: JSON? = JSON.null, value: Any, completionHandler:@escaping AppLaunchCompletionHandler){
-        if(isInitialized) {
-            let registrationData:JSON = AppLaunchUtils.getRegistrationData(self.deviceId, userId, attributes!)
-            let request = AppLaunchInvoker(url: (URLBuilder?.getUserURL())!, method: HttpMethod.PUT, timeout: 60)
+            let registrationData:JSON = AppLaunchUtils.getRegistrationData(config.getDeviceID(), user.getUserId(), user.getAttributes())
+            let request = AppLaunchInvoker(url: URLBuilder!.getAppRegistrationURL(), method: method, timeout: 60)
             request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
-            request.addHeader(self.clientSecret!, CLIENT_SECRET)
+            request.addHeader(config.getClientSecret(), CLIENT_SECRET)
             request.setJSONRequestBody(registrationData)
             request.setCompletionHandler({(response,error) in
                 if(response != nil){
-                    let responseText = response?.responseText ?? ""
                     let status = response?.statusCode ?? 0
-                    if(status == 200 || status == 201){
-                        self.isUserRegistered = true
-                        self.userId = userId
-                        AppLaunchUtils.saveUserContext(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)
-                        completionHandler(AppLaunchResponse(status, responseText), nil)
+                    if(status == 200 || status == 201 || status == 405){
+                        // Registration Success. Save User Context and proceed with getActions Call
+                        Analytics.userIdentity = self.user.getUserId()
+                        AppLaunchUtils.saveUserContext(userId: self.user.getUserId(), applicationId: self.config.getAppID(), deviceId: self.config.getDeviceID(), region: self.config.getICRegion(), attributes: self.user.getAttributes())
+                        self.getActions(completionHandler)
                     }else{
-                        completionHandler(nil, AppLaunchFailResponse(status, responseText))
-                        self.isUserRegistered = false
+                        completionHandler(nil, AppLaunchFailResponse(.REGISTRATION_FAILURE ,  (response?.responseText)!))
                     }
-                }else if let responseError = error{
-                    completionHandler(nil, AppLaunchFailResponse(500, responseError.localizedDescription))
+                }else {
+                    completionHandler(nil, AppLaunchFailResponse(.REGISTRATION_FAILURE , (error?.localizedDescription)!))
                 }
             })
             request.execute()
-        } else{
-            completionHandler(nil, AppLaunchFailResponse(500, MSG__ERR_NOT_REG_NOT_INIT))
         }
-        
     }
     
-    /**
-     
-     This Methode used to unregister the device from the IBM Cloud AppLaunch service.
-     
-     - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the success information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
-     */
-    public func unregisterDevice(completionHandler:@escaping AppLaunchCompletionHandler){
-        if(isInitialized) {
-            if(AppLaunchUtils.userNeedsToBeRegistered(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
-                completionHandler(AppLaunchResponse(500, "Device Not Registered"), nil)
-            } else {
-                let request = AppLaunchInvoker(url: URLBuilder!.getUserURL(), method: HttpMethod.DELETE, timeout: 60)
-                request.addHeader(self.clientSecret!, CLIENT_SECRET)
-                request.setCompletionHandler({(response,error) in
-                    if(response != nil){
-                        let responseText = response?.responseText ?? ""
-                        let status = response?.statusCode ?? 0
-                        if(status == 204){
-                            // Clear registration data and user defaults
-                            self.isUserRegistered = false
-                            AppLaunchCacheManager.sharedInstance.clearUserDefaults()
-                            completionHandler(AppLaunchResponse(status,responseText), nil)
-                        }else{
-                            completionHandler(nil, AppLaunchFailResponse(status, responseText))
-                        }
-                    }else if let responseError = error{
-                        completionHandler(nil, AppLaunchFailResponse(500,responseError.localizedDescription))
-                    }
-                })
-                request.execute()
-            }
-        } else{
-            completionHandler(nil, AppLaunchFailResponse(500, MSG__ERR_NOT_REG_NOT_INIT))
-        }
-        
-    }
     
     /**
      
@@ -203,45 +142,92 @@ public class AppLaunch:NSObject{
      
      - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the actions information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
      */
-    public func getActions(completionHandler:@escaping AppLaunchCompletionHandler){
-        
-        if(isInitialized && !AppLaunchUtils.userNeedsToBeRegistered(userId: self.userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
-            
-            let request = AppLaunchInvoker(url: (URLBuilder?.getActionURL())!, method: HttpMethod.GET, timeout: 60)
-            request.addHeader(self.clientSecret!, CLIENT_SECRET)
-            
-            request.setCompletionHandler({ (response, error) in
-                if response != nil {
-                    let status = response?.statusCode ?? 0
-                    let responseText = response?.responseText ?? ""
-                    
-                    if(status == 200 || status == 201){
-                        if let data = responseText.data(using: String.Encoding.utf8) {
-                            do {
-                                let respJson = try JSON(data: data)
-                                print("response data from server \(responseText)")
-                                AppLaunchCacheManager.sharedInstance.addActions(respJson[FEATURES])
-                                AppLaunchCacheManager.sharedInstance.addInAppActionToCache(respJson[INAPP])
-                                completionHandler(AppLaunchResponse(200, "", respJson), nil)
-                            } catch {
-                                completionHandler(nil, AppLaunchFailResponse(404, error.localizedDescription))
-                            }
+    private func getActions(_ completionHandler: @escaping AppLaunchCompletionHandler){
+        let request = AppLaunchInvoker(url: (URLBuilder?.getActionURL())!, method: HttpMethod.GET, timeout: 60)
+        request.addHeader(config.getClientSecret() , CLIENT_SECRET)
+        request.setCompletionHandler({ (response, error) in
+            if response != nil {
+                let status = response?.statusCode ?? 0
+                let responseText = response?.responseText ?? ""
+                
+                if(status == 200 || status == 201){
+                    if let data = responseText.data(using: String.Encoding.utf8) {
+                        do {
+                            let respJson = try JSON(data: data)
+                            print("response data from server \(responseText)")
+                            AppLaunchCacheManager.sharedInstance.addActions(respJson[FEATURES])
+                            AppLaunchCacheManager.sharedInstance.addInAppActionToCache(respJson[INAPP])
+                            self.processInAppActions()
+                            completionHandler(AppLaunchResponse(respJson), nil)
+                        } catch {
+                            completionHandler(nil, AppLaunchFailResponse(.FETCH_ACTIONS_FAILURE , error.localizedDescription))
                         }
-                    }else{
-                        print("[404] Actions Not found")
-                        completionHandler(nil, AppLaunchFailResponse(status, responseText))
                     }
-                    
-                }else {
-                    completionHandler(nil, AppLaunchFailResponse(500, MSG__ERR_GET_ACTIONS))
+                }else{
+                    print("[404] Actions Not found")
+                    completionHandler(nil, AppLaunchFailResponse(.FETCH_ACTIONS_FAILURE , responseText))
                 }
-            })
-            request.execute()
-            
-        }else{
-            completionHandler(nil, AppLaunchFailResponse(500, MSG__ERR_NOT_REG_NOT_INIT))
-            
+                
+            }else {
+                completionHandler(nil, AppLaunchFailResponse(.FETCH_ACTIONS_FAILURE, (error?.localizedDescription)!))
+            }
+        })
+        request.execute()
+    }
+    
+    private func displayInAppMessage(_ action: JSON) -> Void {
+        let layout : String = action[LAYOUT].stringValue
+        switch(layout){
+        case MessageType.Banner.rawValue:
+            AppLaunchInAppMessaging(action).ShowBanner()
+            break
+        default :
+            break
         }
+    }
+    
+    private func processInAppActions() -> Void {
+        let InAppActions = AppLaunchCacheManager.sharedInstance.readJSON(INAPP)
+        for (_, action) in InAppActions {
+            for (_, trigger) in action[TRIGGERS] {
+                let triggerAction : String = trigger[ACTION].stringValue
+                switch(triggerAction){
+                case TriggerType.EveryLaunch.rawValue :
+                    displayInAppMessage(action)
+                    break
+                case TriggerType.FirstLaunch.rawValue :
+                    let previousDateString = AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction).isEmpty ? "0" : AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction)
+                    let previousDate = Int(previousDateString)!
+                    let currentDate = AppLaunchUtils.getCurrentDate()
+                    // Check if date changed or not
+                    if(currentDate > previousDate) {
+                        displayInAppMessage(action)
+                        AppLaunchCacheManager.sharedInstance.addString(String(AppLaunchUtils.getCurrentDate()), action[NAME].stringValue + triggerAction)
+                    }
+                    break
+                case TriggerType.EveryAlternateLaunch.rawValue :
+                    if(AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction).isEmpty) {
+                        displayInAppMessage(action)
+                        AppLaunchCacheManager.sharedInstance.addString(triggerAction, action[NAME].stringValue + triggerAction)
+                    } else {
+                        AppLaunchCacheManager.sharedInstance.clearString(action[NAME].stringValue + triggerAction)
+                    }
+                    break
+                case TriggerType.OnceAndOnlyOnce.rawValue :
+                    if(AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction).isEmpty) {
+                        displayInAppMessage(action)
+                        AppLaunchCacheManager.sharedInstance.addString(triggerAction, action[NAME].stringValue + triggerAction)
+                    }
+                    break
+                default :
+                    break
+                }
+            }
+        }
+    }
+    
+    public func sendSessionLogs() {
+    Analytics.send()
     }
     
     /**
@@ -280,6 +266,96 @@ public class AppLaunch:NSObject{
         }
         return ""
     }
+    
+    private func IntializeSession() {
+        Analytics.initialize(config: config, url: (URLBuilder?.getSessionURL())!, hasUserContext: true, collectLocation: false, deviceEvents: .lifecycle, .network)
+        Analytics.isEnabled = true
+        Logger.isLogStorageEnabled = true
+        Logger.isInternalDebugLoggingEnabled = true
+        Logger.logLevelFilter = LogLevel.debug
+    }
+
+
+/*
+    /**
+     
+     This Methode used to update the user information in the IBM Cloud AppLaunch service.
+     
+     - Parameter userID: This is the userId value.
+     - Parameter attribute: This is the attribute value.
+     
+     - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the success information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
+     */
+    public func updateDevice(userId: String, attributes: JSON? = JSON.null, value: Any, completionHandler:@escaping AppLaunchCompletionHandler){
+        if(isInitialized) {
+            let registrationData:JSON = AppLaunchUtils.getRegistrationData(self.deviceId, userId, attributes!)
+            let request = AppLaunchInvoker(url: (URLBuilder?.getUserURL())!, method: HttpMethod.PUT, timeout: 60)
+            request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
+            request.addHeader(self.clientSecret!, CLIENT_SECRET)
+            request.setJSONRequestBody(registrationData)
+            request.setCompletionHandler({(response,error) in
+                if(response != nil){
+                    let responseText = response?.responseText ?? ""
+                    let status = response?.statusCode ?? 0
+                    if(status == 200 || status == 201){
+                        self.isUserRegistered = true
+                        self.userId = userId
+                        AppLaunchUtils.saveUserContext(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)
+                        completionHandler(AppLaunchResponse(status, responseText), nil)
+                    }else{
+                        completionHandler(nil, AppLaunchFailResponse(status, responseText))
+                        self.isUserRegistered = false
+                    }
+                }else if let responseError = error{
+                    completionHandler(nil, AppLaunchFailResponse(500, responseError.localizedDescription))
+                }
+            })
+            request.execute()
+        } else{
+            completionHandler(nil, AppLaunchFailResponse(500, MSG__ERR_NOT_REG_NOT_INIT))
+        }
+        
+    }}
+
+    /**
+     
+     This Methode used to unregister the device from the IBM Cloud AppLaunch service.
+     
+     - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the success information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
+     */
+    public func unregisterDevice(completionHandler:@escaping AppLaunchCompletionHandler){
+        if(isInitialized) {
+            if(AppLaunchUtils.userNeedsToBeRegistered(userId: userId, applicationId: self.applicationId!, deviceId: self.deviceId, region: self.region!)){
+                completionHandler(AppLaunchResponse(500, "Device Not Registered"), nil)
+            } else {
+                let request = AppLaunchInvoker(url: URLBuilder!.getUserURL(), method: HttpMethod.DELETE, timeout: 60)
+                request.addHeader(self.clientSecret!, CLIENT_SECRET)
+                request.setCompletionHandler({(response,error) in
+                    if(response != nil){
+                        let responseText = response?.responseText ?? ""
+                        let status = response?.statusCode ?? 0
+                        if(status == 204){
+                            // Clear registration data and user defaults
+                            self.isUserRegistered = false
+                            AppLaunchCacheManager.sharedInstance.clearUserDefaults()
+                            completionHandler(AppLaunchResponse(status,responseText), nil)
+                        }else{
+                            completionHandler(nil, AppLaunchFailResponse(status, responseText))
+                        }
+                    }else if let responseError = error{
+                        completionHandler(nil, AppLaunchFailResponse(500,responseError.localizedDescription))
+                    }
+                })
+                request.execute()
+            }
+        } else{
+            completionHandler(nil, AppLaunchFailResponse(500, MSG__ERR_NOT_REG_NOT_INIT))
+        }
+        
+    }
+    
+   
+    
     
     /**
      
@@ -333,56 +409,9 @@ public class AppLaunch:NSObject{
         }
     }
     
-    private func displayInAppMessage(_ action: JSON) -> Void {
-        let layout : String = action[LAYOUT].stringValue
-        switch(layout){
-        case MessageType.Banner.rawValue:
-            AppLaunchInAppMessaging(action).ShowBanner()
-            break
-        default :
-            break
-        }
+   
     }
     
-    private func displayInAppActions() -> Void {
-        let InAppActions = AppLaunchCacheManager.sharedInstance.readJSON(INAPP)
-        for (_, action) in InAppActions {
-            for (_, trigger) in action[TRIGGERS] {
-                let triggerAction : String = trigger[ACTION].stringValue
-                switch(triggerAction){
-                case TriggerType.EveryLaunch.rawValue :
-                    displayInAppMessage(action)
-                    break
-                case TriggerType.FirstLaunch.rawValue :
-                    let previousDateString = AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction).isEmpty ? "0" : AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction)
-                    let previousDate = Int(previousDateString)!
-                    let currentDate = AppLaunchUtils.getCurrentDate()
-                    // Check if date changed or not
-                    if(currentDate > previousDate) {
-                        displayInAppMessage(action)
-                        AppLaunchCacheManager.sharedInstance.addString(String(AppLaunchUtils.getCurrentDate()), action[NAME].stringValue + triggerAction)
-                    }
-                    break
-                case TriggerType.EveryAlternateLaunch.rawValue :
-                    if(AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction).isEmpty) {
-                        displayInAppMessage(action)
-                        AppLaunchCacheManager.sharedInstance.addString(triggerAction, action[NAME].stringValue + triggerAction)
-                    } else {
-                        AppLaunchCacheManager.sharedInstance.clearString(action[NAME].stringValue + triggerAction)
-                    }
-                    break
-                case TriggerType.OnceAndOnlyOnce.rawValue :
-                    if(AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction).isEmpty) {
-                        displayInAppMessage(action)
-                        AppLaunchCacheManager.sharedInstance.addString(triggerAction, action[NAME].stringValue + triggerAction)
-                    }
-                    break
-                default :
-                    break
-                }
-            }
-        }
-    }
-    
-    
+ */
 }
+

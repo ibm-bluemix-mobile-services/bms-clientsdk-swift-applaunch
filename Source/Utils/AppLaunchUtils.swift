@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BMSCore
 import SwiftyJSON
 
 internal class AppLaunchUtils:NSObject{
@@ -16,6 +17,10 @@ internal class AppLaunchUtils:NSObject{
             return false;
         }
         return true
+    }
+    
+    class func getDeviceID() -> String {
+        return BMSClient.sharedInstance.authorizationManager.deviceIdentity.ID!
     }
     
     class func getRegistrationData(_ deviceID:String,_ userID:String,_ attributes:JSON) -> JSON {
@@ -29,24 +34,35 @@ internal class AppLaunchUtils:NSObject{
         return registrationData
     }
     
-    class func saveUserContext(userId:String, applicationId:String, deviceId:String, region:String){
+    class func saveUserContext(userId:String, applicationId:String, deviceId:String, region:String, attributes: JSON){
         let defaults = AppLaunchCacheManager.sharedInstance
         print("Saving user context :: userId:\(userId), applicationId:\(applicationId), deviceId:\(deviceId), region:\(region)")
         defaults.addString(userId, USER_ID)
         defaults.addString(deviceId, DEVICE_ID)
         defaults.addString(applicationId, APP_ID)
         defaults.addString(region, REGION)
+        if attributes != JSON.null {
+            defaults.addString(attributes.rawString()!, ATTRIBUTES)
+        }
     }
     
-    class func userNeedsToBeRegistered(userId:String, applicationId:String, deviceId:String, region:String)->Bool{
+    class func userNeedsToBeRegistered(_ userId: String,_ applicationId: String,_ deviceId: String,_ region: String) -> Bool {
         let defaults = AppLaunchCacheManager.sharedInstance
         
         if (!defaults.readString(USER_ID).isEmpty && !defaults.readString(DEVICE_ID).isEmpty && !defaults.readString(APP_ID).isEmpty && !defaults.readString(REGION).isEmpty) {
-            // Check if existing data is changed with stored data
-            if (defaults.readString(USER_ID) == userId && defaults.readString(DEVICE_ID) == deviceId && defaults.readString(APP_ID) == applicationId && defaults.readString(REGION) == region) {
-                // Stored app data and device data is not changed
-                return false
-            }
+            return false
+        }
+        return true
+    }
+    
+    class func isUpdateRegistrationRequired(_ userId: String,_ applicationId: String,_ deviceId: String,_ region: String,_ attributes: JSON) -> Bool {
+        let defaults = AppLaunchCacheManager.sharedInstance
+        if userNeedsToBeRegistered(userId, applicationId, deviceId, region) {
+            return false
+        }
+        if (defaults.readString(USER_ID) == userId && defaults.readJSON(ATTRIBUTES) == attributes && defaults.readString(DEVICE_ID) == deviceId && defaults.readString(APP_ID) == applicationId && defaults.readString(REGION) == region) {
+            // Stored app data and device data is not changed
+            return false
         }
         return true
     }

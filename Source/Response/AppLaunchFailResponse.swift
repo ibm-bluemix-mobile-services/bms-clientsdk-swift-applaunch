@@ -16,8 +16,8 @@ import SwiftyJSON
  It is used to handle the failure responses from the AppLaunch REST API calls.
  */
 public class AppLaunchFailResponse {
-    private var errorCode:Int
-    private var errorMessage:String
+    private var errorCode: ErrorCode
+    private var errorMessage: String
     
     /**
      This method will intialize the AppLaunchFailResponse with Error Code and Error Message
@@ -25,7 +25,7 @@ public class AppLaunchFailResponse {
      - parameter errorCode: This is Error Code value
      - parameter errorMessage: This is Error Message value
      */
-    internal init(_ errorCode:Int,_ errorMessage:String) {
+    internal init(_ errorCode: ErrorCode,_ errorMessage: String) {
         self.errorCode = errorCode
         self.errorMessage = errorMessage
     }
@@ -38,7 +38,7 @@ public class AppLaunchFailResponse {
      
      - returns: errorCode: This returns the error code value from the AppLaunch Service
      */
-    public func getErrorCode() -> Int {
+    public func getErrorCode() -> ErrorCode {
         return errorCode
     }
     
