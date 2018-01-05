@@ -37,6 +37,9 @@ public enum ICRegion : String {
     
 }
 
+/**
+ `RefreshPolicy` is an enumerator which can be used to specify the session refresh policy
+ */
 public enum RefreshPolicy : Int {
     
     case REFRESH_ON_EVERY_START = 0
@@ -47,6 +50,9 @@ public enum RefreshPolicy : Int {
     
 }
 
+/**
+ `ErrorCode` is an enumerator which contains error information.
+ */
 public enum ErrorCode : Int {
     
     case REGISTRATION_FAILURE = 0
@@ -118,5 +124,7 @@ internal let INAPP:String = "inApp"
 internal let IMAGE_URL:String = "imageUrl"
 
 internal let LAYOUT:String = "layout"
+
+internal let CACHE_EXPIRATION:String = "CACHE_EXPIRATION"
 
 

@@ -9,6 +9,16 @@
 import Foundation
 import SwiftyJSON
 
+
+/**
+ AppLaunchUser contains user information which is used by AppLaunch SDK
+ 
+ This method will intialize the AppLaunchUser with the help of Builder Class.
+ 
+ - parameter userId: userID value
+ - parameter custom(Optional): custome user information key and value pair
+ 
+ */
 public class AppLaunchUser {
     
     private var userID: String

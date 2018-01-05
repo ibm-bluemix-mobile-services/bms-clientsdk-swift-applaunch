@@ -19,7 +19,7 @@ internal class AppLaunchURLBuilder {
     private let EVENTS = "/events"
     private let METRICS = "/metrics"
     private let SESSIONACTIVITY = "/sessionActivity"
-    private let MOBILESERVICES:String = "http://mobileservices-staging"
+    private let MOBILESERVICES:String = "http://mobileservices"
     private let APPLAUNCH_CONTEXT:String = "/applaunch/v1"
     
     

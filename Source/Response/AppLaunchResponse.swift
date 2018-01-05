@@ -21,7 +21,7 @@ public class AppLaunchResponse {
     
     /**
      This method will intialize the AppLaunchResponse with responseJSON
-
+     
      - parameter responseJSON: bluemixRegionSuffix specifies the location where the app is hosted
      */
     internal init(_ responseJSON: JSON) {

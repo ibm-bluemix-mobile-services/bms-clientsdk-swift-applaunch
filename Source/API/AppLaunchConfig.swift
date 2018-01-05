@@ -9,6 +9,17 @@
 import Foundation
 import SwiftyJSON
 
+/**
+ AppLaunchConfig contains configuration of AppLaunch Service which is used by AppLaunch SDK
+ 
+ This method will intialize the AppLaunchConfig with the help of Builder Class. The builder class parameters are optional,
+ 
+ - parameter cacheExpiration(Optional): Cache expiration timeout value
+ - parameter deviceID(Optional): used to ovveride device ID. AppLaunch SDK generates deviceID by default if this is not set.
+ - parameter eventFlushInterval(Optional): Event Flish interval value
+ - parameter fetchPolicy(Optional): Actions fetch policy
+ 
+ */
 public class AppLaunchConfig {
     
     private var policy: RefreshPolicy
@@ -27,11 +38,11 @@ public class AppLaunchConfig {
     }
     
     public class Builder {
-        
+        // default values
         internal var policy: RefreshPolicy = .REFRESH_ON_EVERY_START
         internal var deviceID: String = AppLaunchUtils.getDeviceID()
-        internal var cacheExpiration: Int = 0
-        internal var eventFlushInterval: Int = 0
+        internal var cacheExpiration: Int = 60
+        internal var eventFlushInterval: Int = 60
         
         public func fetchPolicy(_ policy: RefreshPolicy) -> Builder {
             self.policy = policy

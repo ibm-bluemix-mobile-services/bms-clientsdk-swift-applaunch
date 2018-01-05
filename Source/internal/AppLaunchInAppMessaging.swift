@@ -32,7 +32,7 @@ internal class AppLaunchInAppMessaging: NSObject {
                     codes.append(metric[CODE].stringValue)
                 }
                 if (!codes.isEmpty) {
-//                    AppLaunch.sharedInstance.sendMetricsWith(codes: codes)
+                    AppLaunch.sharedInstance.sendMetricsWith(codes: codes)
                 }
             }))
         }
