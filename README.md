@@ -123,25 +123,21 @@ import IBMAppLaunch
 ```
 ### Initializing the AppLaunch SDK
 
+Build Configuration Object
 ```
-AppLaunch.sharedInstance.initializeWithAppGUID(applicationId: "your AppLaunch appGUID", clientSecret: "your AppLaunch client secret",region: "region")
-
-```
-
-### Register the user
-
-```
-AppLaunch.sharedInstance.registerWith(userId: "chethan")
-```
-Provide a completion handler to get a callback with the status and result of the call.
-
-### Get Client Actions
-
-```
-AppLaunch.sharedInstance.actions
+let config =   AppLaunchConfig.Builder().cacheExpiration(30).eventFlushInterval(60).fetchPolicy(.REFRESH_ON_EXPIRY).build()
 ```
 
-Provide a completion handler to get the status and response of the call.
+Build User Object
+```
+let user = AppLaunchUser.Builder(userId: "vittal").custom(key: "email", value: "vittalpai@xyz.com").build()
+```
+
+Initialize App Launch SDK
+
+```
+AppLaunch.sharedInstance.initialize(region: .US_SOUTH_STAGING, appId: "your AppLaunch appGUID", clientSecret: "your AppLaunch client secret", config: AppLaunchConfig, user: AppLaunchUser, completionHandler: AppLaunchCompletionHandler)
+```
 
 ### Get features and its properties
 
@@ -156,3 +152,12 @@ To send metrics to the server use the ```AppLaunch.sharedInstance.sendMetricsWit
 ```
 AppLaunch.sharedInstance.sendMetricsWith(code: "metric code")
 ```
+
+### Destroy
+
+This method unregisters the user from AppLaunch Service and clears the cache
+
+```
+AppLaunch.sharedInstance.destroy(completionHandler: AppLaunchCompletionHandler)
+```
+

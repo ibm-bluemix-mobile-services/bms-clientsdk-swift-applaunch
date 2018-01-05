@@ -28,6 +28,13 @@
 		480BF7AD1F765ED400C70D6C /* AppLaunchMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7AC1F765ED400C70D6C /* AppLaunchMessages.swift */; };
 		C705A7CC1FF36B65001DF55B /* AppLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C705A7CB1FF36B65001DF55B /* AppLaunchTests.swift */; };
 		C705A7CE1FF36B65001DF55B /* AppLaunch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 480BF7991F763CAA00C70D6C /* AppLaunch.framework */; };
+		C798DE291FFE37C700803D14 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C798DE231FFE37C700803D14 /* Constants.swift */; };
+		C798DE2A1FFE37C700803D14 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = C798DE241FFE37C700803D14 /* Error.swift */; };
+		C798DE2B1FFE37C700803D14 /* AppLaunchLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C798DE251FFE37C700803D14 /* AppLaunchLogger.swift */; };
+		C798DE2C1FFE37C700803D14 /* LocationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C798DE271FFE37C700803D14 /* LocationDelegate.swift */; };
+		C798DE2D1FFE37C700803D14 /* AppLaunchAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = C798DE281FFE37C700803D14 /* AppLaunchAnalytics.swift */; };
+		C798DE301FFE37D800803D14 /* AppLaunchUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C798DE2E1FFE37D700803D14 /* AppLaunchUser.swift */; };
+		C798DE311FFE37D800803D14 /* AppLaunchConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = C798DE2F1FFE37D800803D14 /* AppLaunchConfig.swift */; };
 		C7C60C281FD832600094BB18 /* AppLaunchCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C60C271FD832600094BB18 /* AppLaunchCacheManager.swift */; };
 		C7D4DAA11FE1084B007C9E98 /* AppLaunchInvoker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAA01FE1084B007C9E98 /* AppLaunchInvoker.swift */; };
 		C7D4DAA31FE124B4007C9E98 /* AppLaunchURLBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAA21FE124B4007C9E98 /* AppLaunchURLBuilder.swift */; };
@@ -64,6 +71,13 @@
 		C705A7C91FF36B65001DF55B /* AppLaunchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AppLaunchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C705A7CB1FF36B65001DF55B /* AppLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchTests.swift; sourceTree = "<group>"; };
 		C705A7CD1FF36B65001DF55B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C798DE231FFE37C700803D14 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		C798DE241FFE37C700803D14 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		C798DE251FFE37C700803D14 /* AppLaunchLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLaunchLogger.swift; sourceTree = "<group>"; };
+		C798DE271FFE37C700803D14 /* LocationDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationDelegate.swift; sourceTree = "<group>"; };
+		C798DE281FFE37C700803D14 /* AppLaunchAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLaunchAnalytics.swift; sourceTree = "<group>"; };
+		C798DE2E1FFE37D700803D14 /* AppLaunchUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLaunchUser.swift; sourceTree = "<group>"; };
+		C798DE2F1FFE37D800803D14 /* AppLaunchConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppLaunchConfig.swift; sourceTree = "<group>"; };
 		C7C60C271FD832600094BB18 /* AppLaunchCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchCacheManager.swift; sourceTree = "<group>"; };
 		C7D4DAA01FE1084B007C9E98 /* AppLaunchInvoker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchInvoker.swift; sourceTree = "<group>"; };
 		C7D4DAA21FE124B4007C9E98 /* AppLaunchURLBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchURLBuilder.swift; sourceTree = "<group>"; };
@@ -139,6 +153,7 @@
 			children = (
 				C77C6E631FD7C7B300217304 /* API */,
 				C7D4DA9F1FE10808007C9E98 /* Internal */,
+				C798DE221FFE37C700803D14 /* Logger */,
 				C7D9FD181FE7B8AA009932AD /* Response */,
 				C77C6E621FD7C79E00217304 /* Utils */,
 				C7D4DAAB1FE28806007C9E98 /* UIComponents */,
@@ -169,8 +184,22 @@
 			isa = PBXGroup;
 			children = (
 				480BF7A61F764E0B00C70D6C /* AppLaunch.swift */,
+				C798DE2F1FFE37D800803D14 /* AppLaunchConfig.swift */,
+				C798DE2E1FFE37D700803D14 /* AppLaunchUser.swift */,
 			);
 			path = API;
+			sourceTree = "<group>";
+		};
+		C798DE221FFE37C700803D14 /* Logger */ = {
+			isa = PBXGroup;
+			children = (
+				C798DE281FFE37C700803D14 /* AppLaunchAnalytics.swift */,
+				C798DE271FFE37C700803D14 /* LocationDelegate.swift */,
+				C798DE231FFE37C700803D14 /* Constants.swift */,
+				C798DE241FFE37C700803D14 /* Error.swift */,
+				C798DE251FFE37C700803D14 /* AppLaunchLogger.swift */,
+			);
+			path = Logger;
 			sourceTree = "<group>";
 		};
 		C7D4DA9F1FE10808007C9E98 /* Internal */ = {
@@ -380,16 +409,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				C7C60C281FD832600094BB18 /* AppLaunchCacheManager.swift in Sources */,
+				C798DE311FFE37D800803D14 /* AppLaunchConfig.swift in Sources */,
+				C798DE2D1FFE37C700803D14 /* AppLaunchAnalytics.swift in Sources */,
 				480BF7AD1F765ED400C70D6C /* AppLaunchMessages.swift in Sources */,
+				C798DE2B1FFE37C700803D14 /* AppLaunchLogger.swift in Sources */,
 				C7D9FD1C1FE7B8F7009932AD /* AppLaunchFailResponse.swift in Sources */,
 				C7D4DAA31FE124B4007C9E98 /* AppLaunchURLBuilder.swift in Sources */,
+				C798DE2C1FFE37C700803D14 /* LocationDelegate.swift in Sources */,
 				480BF7A91F764FD800C70D6C /* AppLaunchUtils.swift in Sources */,
 				C7D4DAB01FE28856007C9E98 /* PMAlertController.swift in Sources */,
 				C7D4DAAF1FE28856007C9E98 /* PMAlertAction.swift in Sources */,
+				C798DE291FFE37C700803D14 /* Constants.swift in Sources */,
+				C798DE301FFE37D800803D14 /* AppLaunchUser.swift in Sources */,
 				480BF7A71F764E0B00C70D6C /* AppLaunch.swift in Sources */,
 				480BF7A51F764C7200C70D6C /* AppLaunchConstants.swift in Sources */,
 				C7D9FD1A1FE7B8D9009932AD /* AppLaunchResponse.swift in Sources */,
 				C7D4DAA61FE2507F007C9E98 /* AppLaunchInAppMessaging.swift in Sources */,
+				C798DE2A1FFE37C700803D14 /* Error.swift in Sources */,
 				C7D4DAA11FE1084B007C9E98 /* AppLaunchInvoker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

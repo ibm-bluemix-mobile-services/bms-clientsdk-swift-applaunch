@@ -17,6 +17,10 @@ internal class AppLaunchCacheManager {
     private let JSON_PATH_EXTENSION:String = ".json"
     private let JSON_NAME:String = "json"
     private let SERVICE_NAME:String = "AppLaunch"
+    private let attributeExpireAt  = "expiresAt"
+    private let formatterPatern    = "EEE, dd MMM yyyy HH:mm:ss z"
+    private let formatterTimeZone  = "GMT"
+    private let formatterLocale    = "US"
     
     /**
      * Add the string value to the local cache with the given key
@@ -41,7 +45,7 @@ internal class AppLaunchCacheManager {
     }
     
     func clearUserDefaults() -> Void {
-        // Clears registration data and features from User defaults
+        // Clears registration data and actions from User defaults
         UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
     }
     
@@ -53,7 +57,7 @@ internal class AppLaunchCacheManager {
         return JSON.null
     }
     
-    func loadDefaultFeatures() -> Void {
+    func loadDefaultFeatures(_ completionHandler: AppLaunchCompletionHandler) {
         let fileManager = FileManager.init();
         let applicationPath = Bundle.main.bundlePath;
         do {
@@ -66,7 +70,7 @@ internal class AppLaunchCacheManager {
                 addActionToCache(JSON!)
             }
         } catch {
-            print(error)
+            completionHandler(nil, AppLaunchFailResponse.init(.DEFAULT_FEATURE_LOAD_FAILURE, error.localizedDescription))
         }
     }
     
@@ -75,6 +79,18 @@ internal class AppLaunchCacheManager {
             addActionToCache(action)
         }
     }
+    
+    //    func isExpired() -> Bool{
+    //        let now = Date()
+    //
+    //        let expirationTime = readString("EXPIRATION") as Date
+    //        if (expirationTime.compare(now) == ComparisonResult.orderedAscending) {
+    //            clearString(INAPP)
+    //            clearString(FEATURES)
+    //        }
+    //        return expiresAtDate.compare(now) == ComparisonResult.orderedAscending
+    //    }
+    //    
     
     private func addActionToCache(_ action: JSON) -> Void{
         lock.lock()

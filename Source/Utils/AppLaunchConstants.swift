@@ -38,6 +38,34 @@ public enum ICRegion : String {
 }
 
 /**
+ `RefreshPolicy` is an enumerator which can be used to specify the session refresh policy
+ */
+public enum RefreshPolicy : Int {
+    
+    case REFRESH_ON_EVERY_START = 0
+    
+    case REFRESH_ON_EXPIRY = 1
+    
+    case BACKGROUND_REFRESH = 2
+    
+}
+
+/**
+ `ErrorCode` is an enumerator which contains error information.
+ */
+public enum ErrorCode : Int {
+    
+    case REGISTRATION_FAILURE = 0
+    
+    case FETCH_ACTIONS_FAILURE = 1
+    
+    case DEFAULT_FEATURE_LOAD_FAILURE = 3
+    
+    case UNREGISTRATION_FAILURE = 4
+    
+}
+
+/**
  `AppLaunchCompletionHandler` is a callback for AppLaunch REST APIs.
  */
 public typealias AppLaunchCompletionHandler = (_ Response:AppLaunchResponse?, _ Error:AppLaunchFailResponse? ) -> Void
@@ -96,5 +124,7 @@ internal let INAPP:String = "inApp"
 internal let IMAGE_URL:String = "imageUrl"
 
 internal let LAYOUT:String = "layout"
+
+internal let CACHE_EXPIRATION:String = "CACHE_EXPIRATION"
 
 
