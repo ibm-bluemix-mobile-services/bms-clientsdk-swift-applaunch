@@ -124,7 +124,8 @@ import IBMAppLaunch
 ### Initializing the AppLaunch SDK
 
 Build Configuration Object
-```let config =   AppLaunchConfig.Builder().cacheExpiration(30).eventFlushInterval(60).fetchPolicy(.REFRESH_ON_EXPIRY).build()
+```
+let config =   AppLaunchConfig.Builder().cacheExpiration(30).eventFlushInterval(60).fetchPolicy(.REFRESH_ON_EXPIRY).build()
 ```
 
 Build User Object
