@@ -23,7 +23,7 @@ import SwiftyJSON
 /**
     Adds the `send` method.
 */
-public extension Logger {
+internal extension Logger {
     
     
     internal static var currentlySendingLoggerLogs = false
@@ -37,7 +37,7 @@ public extension Logger {
 
         - parameter completionHandler:  Optional callback containing the results of the send request.
     */
-    public static func send(completionHandler userCallback: BMSCompletionHandler? = nil) {
+    internal static func send(completionHandler userCallback: BMSCompletionHandler? = nil) {
         
         guard !currentlySendingLoggerLogs else {
             
@@ -197,7 +197,7 @@ public extension Logger {
 /*
     Provides the internal implementation of the `Logger` class in the BMSAnalyticsAPI framework.
 */
-public class AppLaunchLogger: LoggerDelegate {
+internal class AppLaunchLogger: LoggerDelegate {
     
     
     // MARK: Properties (internal)
@@ -234,7 +234,7 @@ public class AppLaunchLogger: LoggerDelegate {
     
     // True if the app crashed recently due to an uncaught exception.
     // This property will be set back to `false` if the logs are sent to the server.
-    public var isUncaughtExceptionDetected: Bool {
+    internal var isUncaughtExceptionDetected: Bool {
         
         get {
             return UserDefaults.standard.bool(forKey: Constants.uncaughtException)
@@ -352,7 +352,7 @@ public class AppLaunchLogger: LoggerDelegate {
 
     // This is the master function that handles all of the logging, including level checking, printing to console, and writing to file
     // All other log functions below this one are helpers for this function
-    public func logToFile(message logMessage: String, level: LogLevel, loggerName: String, calledFile: String, calledFunction: String, calledLineNumber: Int, additionalMetadata: [String : Any]?) {
+    internal func logToFile(message logMessage: String, level: LogLevel, loggerName: String, calledFile: String, calledFunction: String, calledLineNumber: Int, additionalMetadata: [String : Any]?) {
         
         let dispatchGroup = DispatchGroup()
         
