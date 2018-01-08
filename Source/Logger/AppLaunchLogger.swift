@@ -53,7 +53,7 @@ internal extension Logger {
             
             currentlySendingLoggerLogs = false
             
-            if error == nil && response?.statusCode == 201 {
+            if error == nil && response?.statusCode == 202 {
                 
                 AppLaunchLogger.internalLogger.debug(message:"Client logs successfully sent to the server.")
                 
@@ -131,7 +131,7 @@ internal extension Logger {
             
             currentlySendingAnalyticsLogs = false
             
-            if error == nil && response?.statusCode == 201 {
+            if error == nil && response?.statusCode == 202 {
                 
                 Analytics.logger.debug(message: "Analytics data successfully sent to the server.")
                 

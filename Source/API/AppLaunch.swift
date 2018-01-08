@@ -130,10 +130,6 @@ public class AppLaunch: NSObject {
         
     }
     
-    public func sendSessionLogs() {
-        Analytics.send()
-    }
-    
     /**
      Checks if the feature is enabled for the app
      
@@ -246,6 +242,8 @@ public class AppLaunch: NSObject {
             fetchActions(completionHandler)
             break
         }
+        // Display InApp Messages
+        NotificationCenter.default.addObserver(self, selector: #selector(self.processInAppActions), name: .UIApplicationDidBecomeActive, object: nil)
     }
     
     
@@ -268,12 +266,11 @@ public class AppLaunch: NSObject {
                         do {
                             let respJson = try JSON(data: data)
                             print("response data from server \(responseText)")
-                            let ExpirationTime = String(Int(AppLaunchUtils.getCurrentDateAndTime()) + (self.config.getCacheExpiration() * 60))
+                            let ExpirationTime = String(Int(AppLaunchUtils.getCurrentDateAndTime()) + Int(self.config.getCacheExpiration() * 60))
                             AppLaunchCacheManager.sharedInstance.addString(ExpirationTime, CACHE_EXPIRATION)
                             AppLaunchCacheManager.sharedInstance.addString(respJson.rawString()!, ACTION)
                             AppLaunchCacheManager.sharedInstance.addActions(respJson[FEATURES])
                             AppLaunchCacheManager.sharedInstance.addInAppActionToCache(respJson[INAPP])
-                            self.processInAppActions()
                             completionHandler(AppLaunchResponse(respJson), nil)
                         } catch {
                             completionHandler(nil, AppLaunchFailResponse(.FETCH_ACTIONS_FAILURE , error.localizedDescription))
@@ -302,7 +299,7 @@ public class AppLaunch: NSObject {
         }
     }
     
-    private func processInAppActions() -> Void {
+    @objc private func processInAppActions() -> Void {
         let InAppActions = AppLaunchCacheManager.sharedInstance.readJSON(INAPP)
         for (_, action) in InAppActions {
             for (_, trigger) in action[TRIGGERS] {
@@ -340,14 +337,22 @@ public class AppLaunch: NSObject {
                 }
             }
         }
+        NotificationCenter.default.removeObserver(self, name: .UIApplicationDidBecomeActive, object: nil)
     }
     
     private func IntializeSession() {
         Analytics.initialize(config: config, url: (URLBuilder?.getSessionURL())!, hasUserContext: true, collectLocation: false, deviceEvents: .lifecycle, .network)
         Analytics.isEnabled = true
-        Logger.isLogStorageEnabled = true
-        Logger.isInternalDebugLoggingEnabled = true
-        Logger.logLevelFilter = LogLevel.error
+        Timer.scheduledTimer(timeInterval: TimeInterval(config.getEventFlushInterval() * 60),
+                                               target:self,
+                                               selector:#selector(AppLaunch.sendSessionLogs),
+                                               userInfo:nil,
+                                               repeats:true)
     }
+    
+    @objc private func sendSessionLogs() {
+        Analytics.send()
+    }
+    
 }
 

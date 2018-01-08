@@ -23,8 +23,8 @@ import SwiftyJSON
 public class AppLaunchConfig {
     
     private var policy: RefreshPolicy
-    private var cacheExpiration: Int
-    private var eventFlushInterval: Int
+    private var cacheExpiration: Float
+    private var eventFlushInterval: Float
     private var deviceID: String
     private var ICRegion: String = String()
     private var appID: String = String()
@@ -41,20 +41,20 @@ public class AppLaunchConfig {
         // default values
         internal var policy: RefreshPolicy = .REFRESH_ON_EVERY_START
         internal var deviceID: String = AppLaunchUtils.getDeviceID()
-        internal var cacheExpiration: Int = 60
-        internal var eventFlushInterval: Int = 60
+        internal var cacheExpiration: Float = 60
+        internal var eventFlushInterval: Float = 60
         
         public func fetchPolicy(_ policy: RefreshPolicy) -> Builder {
             self.policy = policy
             return self
         }
         
-        public func cacheExpiration(_ cacheExpiration: Int) -> Builder {
+        public func cacheExpiration(_ cacheExpiration: Float) -> Builder {
             self.cacheExpiration = cacheExpiration
             return self
         }
         
-        public func eventFlushInterval(_ eventFlushInterval: Int) -> Builder {
+        public func eventFlushInterval(_ eventFlushInterval: Float) -> Builder {
             self.eventFlushInterval = eventFlushInterval
             return self
         }
@@ -86,11 +86,11 @@ public class AppLaunchConfig {
         return policy
     }
     
-    internal func getCacheExpiration() -> Int {
+    internal func getCacheExpiration() -> Float {
         return cacheExpiration
     }
     
-    internal func getEventFlushInterval() -> Int {
+    internal func getEventFlushInterval() -> Float {
         return eventFlushInterval
     }
     
