@@ -147,7 +147,7 @@ AppLaunch.sharedInstance.initialize(region: .US_SOUTH, appId: "your AppLaunch ap
 
 ### Metrics
 
-To send metrics to the server use the ```AppLaunch.sharedInstance.sendMetricsWith()``` api. This sends the metrics information to the server.
+To send metrics to the server use the ```AppLaunch.sharedInstance.sendMetrics()``` api. This sends the metrics information to the server.
 
 ```
 AppLaunch.sharedInstance.sendMetrics(code: ["metricCodes"])
