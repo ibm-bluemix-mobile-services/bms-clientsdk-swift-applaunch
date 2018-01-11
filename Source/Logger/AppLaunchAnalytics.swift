@@ -27,7 +27,7 @@ import CoreLocation
 /**
     Adds the `initialize` and `send` methods.
 */
-public extension Analytics {
+internal extension Analytics {
     
     
     internal static var automaticallyRecordUsers: Bool = true
@@ -49,7 +49,7 @@ public extension Analytics {
                                             current location. Before location can be retrieved, you must first request permission from the user with `CLLocationManager` `requestWhenInUseAuthorization()`.
         - parameter deviceEvents:       Device events that will be recorded automatically by the `Analytics` class.
     */
-    public static func initialize(config: AppLaunchConfig,url: String, hasUserContext: Bool = false, collectLocation: Bool = false, deviceEvents: DeviceEvent...) {
+    internal static func initialize(config: AppLaunchConfig,url: String, hasUserContext: Bool = false, collectLocation: Bool = false, deviceEvents: DeviceEvent...) {
         
         AppLaunchAnalytics.appID = config.getAppID()
         AppLaunchAnalytics.deviceID = config.getDeviceID()
@@ -102,7 +102,7 @@ public extension Analytics {
      
         - important: Before calling this method, make sure that you have requested permission to use location services from the user (using `CLLocationManager` `requestWhenInUseAuthorization()`), and set the `collectLocation` parameter to `true` in the `Analytics.initialize(appName:clientSecret:hasUserContext:collectLocation:deviceEvents:)` method.
     */
-    public static func logLocation() {
+    internal static func logLocation() {
         
         AppLaunchAnalytics.logEvent(Constants.Metadata.Analytics.location)
     }
@@ -115,7 +115,7 @@ public extension Analytics {
 
         - parameter completionHandler:  Optional callback containing the results of the send request.
     */
-    public static func send(completionHandler userCallback: BMSCompletionHandler? = nil) {
+    internal static func send(completionHandler userCallback: BMSCompletionHandler? = nil) {
         
         Logger.sendAnalytics(completionHandler: userCallback)
     }
@@ -129,24 +129,24 @@ public extension Analytics {
 /*
     Provides the internal implementation of the `Logger` class in the BMSAnalyticsAPI framework.
 */
-public class AppLaunchAnalytics: AnalyticsDelegate {
+internal class AppLaunchAnalytics: AnalyticsDelegate {
     
     
     // MARK: Properties (public)
     
     // The name of the iOS/WatchOS app.
-    public fileprivate(set) static var appID: String?
+    internal fileprivate(set) static var appID: String?
     
     internal fileprivate(set) static var deviceID: String?
     
     internal fileprivate(set) static var url: String?
     
     // The unique ID used to send logs to the Mobile Analytics service.
-    public fileprivate(set) static var clientSecret: String?
+    internal fileprivate(set) static var clientSecret: String?
     
     // Identifies the current application user.
     // To reset the userId, set the value to nil.
-    public var userIdentity: String? {
+    internal var userIdentity: String? {
         
         // Note: The developer sets this value via Analytics.userIdentity
         didSet {
@@ -407,7 +407,7 @@ internal extension AppLaunchAnalytics {
 
 
 
-public extension AppLaunchAnalytics {
+internal extension AppLaunchAnalytics {
     
     // The device ID for iOS devices, unique to each bundle ID on each device.
     // Apps installed with different bundle IDs on the same device will receive different device IDs.

@@ -17,23 +17,17 @@ import Foundation
  */
 public enum ICRegion : String {
     
-    case US_SOUTH = ".us-south.containers.mybluemix.net"
+    case US_SOUTH = ".ng.bluemix.net"
     
-    case UNITED_KINGDOM = ".eu-gb.containers.mybluemix.net"
+    case UNITED_KINGDOM = ".eu-gb.bluemix.net"
     
-    case SYDNEY = ".sydney.containers.mybluemix.net"
+    case SYDNEY = ".au-syd.bluemix.net"
     
-    case US_SOUTH_STAGING = "-staging.us-south.containers.mybluemix.net"
+    case US_SOUTH_STAGING = ".stage1.ng.bluemix.net"
     
-    case UNITED_KINGDOM_STAGING = "-staging.eu-gb.containers.mybluemix.net"
+    case UNITED_KINGDOM_STAGING = ".stage1.eu-gb.bluemix.net"
     
-    case SYDNEY_STAGING = "-staging.sydney.containers.mybluemix.net"
-    
-    case US_SOUTH_DEV = "-dev.us-south.containers.mybluemix.net"
-    
-    case UNITED_KINGDOM_DEV = "-dev.eu-gb.containers.mybluemix.net"
-    
-    case SYDNEY_DEV = "-dev.sydney.containers.mybluemix.net"
+    case US_SOUTH_DEV = "dev.ng.bluemix.net"
     
 }
 
@@ -55,9 +49,11 @@ public enum RefreshPolicy : Int {
  */
 public enum ErrorCode : Int {
     
-    case REGISTRATION_FAILURE = 0
+    case INITIALIZATION_FAILURE = 0
     
-    case FETCH_ACTIONS_FAILURE = 1
+    case REGISTRATION_FAILURE = 1
+    
+    case FETCH_ACTIONS_FAILURE = 2
     
     case DEFAULT_FEATURE_LOAD_FAILURE = 3
     

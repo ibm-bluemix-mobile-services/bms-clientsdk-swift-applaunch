@@ -17,10 +17,6 @@ internal class AppLaunchCacheManager {
     private let JSON_PATH_EXTENSION:String = ".json"
     private let JSON_NAME:String = "json"
     private let SERVICE_NAME:String = "AppLaunch"
-    private let attributeExpireAt  = "expiresAt"
-    private let formatterPatern    = "EEE, dd MMM yyyy HH:mm:ss z"
-    private let formatterTimeZone  = "GMT"
-    private let formatterLocale    = "US"
     
     /**
      * Add the string value to the local cache with the given key

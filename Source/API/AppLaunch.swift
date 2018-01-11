@@ -32,6 +32,8 @@ public class AppLaunch: NSObject {
     
     private var config: AppLaunchConfig!
     
+    private var LogTimer: Timer!
+    
     // MARK: Methods
     
     /**
@@ -62,7 +64,7 @@ public class AppLaunch: NSObject {
             isInitialized = true
         }
         else{
-            print(MSG__CLIENT_OR_APPID_NOT_VALID)
+            completionHandler(nil, AppLaunchFailResponse(.INITIALIZATION_FAILURE, MSG__CLIENT_OR_APPID_NOT_VALID))
         }
     }
     
@@ -82,10 +84,11 @@ public class AppLaunch: NSObject {
                 if(response != nil){
                     let responseText = response?.responseText ?? ""
                     let status = response?.statusCode ?? 0
-                    if(status == 204){
+                    if(status == 202){
                         // Clear registration data and actions
                         self.isUserRegistered = false
                         AppLaunchCacheManager.sharedInstance.clearUserDefaults()
+                        completionHandler(AppLaunchResponse.init(JSON.null), nil)
                     }else{
                         completionHandler(nil, AppLaunchFailResponse(.UNREGISTRATION_FAILURE, responseText))
                     }
@@ -93,9 +96,13 @@ public class AppLaunch: NSObject {
                     completionHandler(nil, AppLaunchFailResponse(.UNREGISTRATION_FAILURE, (error?.localizedDescription)!))
                 }
             })
+            if (LogTimer != nil) {
+                LogTimer.invalidate()
+                sendSessionLogs()
+            }
             request.execute()
         } else {
-            completionHandler(nil, AppLaunchFailResponse(.UNREGISTRATION_FAILURE, "AppLaunch SDK is not Initialized"))
+            completionHandler(nil, AppLaunchFailResponse(.UNREGISTRATION_FAILURE, MSG__ERR_NOT_INIT))
         }
     }
     
@@ -105,7 +112,7 @@ public class AppLaunch: NSObject {
      
      - Parameter code: This is the array of metric codes.
      */
-    public func sendMetricsWith(codes: [String]) -> Void {
+    public func sendMetrics(codes: [String]) -> Void {
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
             var metricsData:JSON = JSON()
             metricsData[METRIC_CODES].arrayObject = codes
@@ -125,13 +132,9 @@ public class AppLaunch: NSObject {
             })
             request.execute()
         }else{
-            print(MSG__ERR_METRICS_NOT_INIT)
+            print(MSG__ERR_NOT_INIT)
         }
         
-    }
-    
-    public func sendSessionLogs() {
-        Analytics.send()
     }
     
     /**
@@ -140,8 +143,8 @@ public class AppLaunch: NSObject {
      - returns
      Bool value
      */
-    public func hasFeatureWith(code:String) -> Bool{
-        if(AppLaunchCacheManager.sharedInstance.readJSON(code) != JSON.null) {
+    public func isFeatureEnabled(featureCode: String) -> Bool{
+        if(AppLaunchCacheManager.sharedInstance.readJSON(featureCode) != JSON.null) {
             return true
         }
         return false
@@ -154,15 +157,15 @@ public class AppLaunch: NSObject {
      String value of the property or Empty string if property/feature doesn't exist
      
      - parameters:
-     - featureWithCode: feature code
-     - propertyWithCode: property code
+     - featureCode: feature code
+     - propertyCode: property code
      */
-    public func getValueFor(featureWithCode:String , propertyWithCode:String) -> String{
-        let feature = AppLaunchCacheManager.sharedInstance.readJSON(featureWithCode)
+    public func getPropertyofFeature(featureCode: String , propertyCode: String) -> String{
+        let feature = AppLaunchCacheManager.sharedInstance.readJSON(featureCode)
         if (feature != JSON.null) {
             for(_,property) in feature[PROPERTIES]{
                 if let propertyCode = property[CODE].string{
-                    if propertyCode == propertyWithCode{
+                    if propertyCode == propertyCode{
                         return property[VALUE].stringValue
                     }
                 }
@@ -246,6 +249,8 @@ public class AppLaunch: NSObject {
             fetchActions(completionHandler)
             break
         }
+        // Display InApp Messages
+        NotificationCenter.default.addObserver(self, selector: #selector(self.processInAppActions), name: .UIApplicationDidBecomeActive, object: nil)
     }
     
     
@@ -267,20 +272,17 @@ public class AppLaunch: NSObject {
                     if let data = responseText.data(using: String.Encoding.utf8) {
                         do {
                             let respJson = try JSON(data: data)
-                            print("response data from server \(responseText)")
-                            let ExpirationTime = String(Int(AppLaunchUtils.getCurrentDateAndTime()) + (self.config.getCacheExpiration() * 60))
+                            let ExpirationTime = String(Int(AppLaunchUtils.getCurrentDateAndTime()) + Int(self.config.getCacheExpiration() * 60))
                             AppLaunchCacheManager.sharedInstance.addString(ExpirationTime, CACHE_EXPIRATION)
                             AppLaunchCacheManager.sharedInstance.addString(respJson.rawString()!, ACTION)
                             AppLaunchCacheManager.sharedInstance.addActions(respJson[FEATURES])
                             AppLaunchCacheManager.sharedInstance.addInAppActionToCache(respJson[INAPP])
-                            self.processInAppActions()
                             completionHandler(AppLaunchResponse(respJson), nil)
                         } catch {
                             completionHandler(nil, AppLaunchFailResponse(.FETCH_ACTIONS_FAILURE , error.localizedDescription))
                         }
                     }
                 }else{
-                    print("[404] Actions Not found")
                     completionHandler(nil, AppLaunchFailResponse(.FETCH_ACTIONS_FAILURE , responseText))
                 }
                 
@@ -302,7 +304,7 @@ public class AppLaunch: NSObject {
         }
     }
     
-    private func processInAppActions() -> Void {
+    @objc private func processInAppActions() -> Void {
         let InAppActions = AppLaunchCacheManager.sharedInstance.readJSON(INAPP)
         for (_, action) in InAppActions {
             for (_, trigger) in action[TRIGGERS] {
@@ -340,14 +342,21 @@ public class AppLaunch: NSObject {
                 }
             }
         }
+        NotificationCenter.default.removeObserver(self, name: .UIApplicationDidBecomeActive, object: nil)
     }
     
     private func IntializeSession() {
         Analytics.initialize(config: config, url: (URLBuilder?.getSessionURL())!, hasUserContext: true, collectLocation: false, deviceEvents: .lifecycle, .network)
         Analytics.isEnabled = true
-        Logger.isLogStorageEnabled = true
-        Logger.isInternalDebugLoggingEnabled = true
-        Logger.logLevelFilter = LogLevel.error
+        LogTimer = Timer.scheduledTimer(timeInterval: TimeInterval(config.getEventFlushInterval() * 60),
+                                        target:self,
+                                        selector:#selector(AppLaunch.sendSessionLogs),
+                                        userInfo:nil,
+                                        repeats:true)
     }
+    
+    @objc private func sendSessionLogs() {
+        Analytics.send()
+    }
+    
 }
-

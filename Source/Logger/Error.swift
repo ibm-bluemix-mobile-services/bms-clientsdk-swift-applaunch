@@ -21,7 +21,7 @@
 /**
     These error codes indicate a failure that occurred within the BMSAnalytics framework.
 */
-public enum AppLaunchAnalyticsError: Error {
+internal enum AppLaunchAnalyticsError: Error {
     
     /// Analytics must be initialized with `Analytics.initialize(appName:apiKey:hasUserContext:deviceEvents:)` before calling `Analytics.send(completionHandler:)` or `Logger.send(completionHandler:)`.
     case analyticsNotInitialized
