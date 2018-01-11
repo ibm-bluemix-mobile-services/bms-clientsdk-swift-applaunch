@@ -32,6 +32,8 @@ public class AppLaunch: NSObject {
     
     private var config: AppLaunchConfig!
     
+    private var LogTimer: Timer!
+    
     // MARK: Methods
     
     /**
@@ -62,7 +64,7 @@ public class AppLaunch: NSObject {
             isInitialized = true
         }
         else{
-            print(MSG__CLIENT_OR_APPID_NOT_VALID)
+            completionHandler(nil, AppLaunchFailResponse(.INITIALIZATION_FAILURE, MSG__CLIENT_OR_APPID_NOT_VALID))
         }
     }
     
@@ -82,10 +84,11 @@ public class AppLaunch: NSObject {
                 if(response != nil){
                     let responseText = response?.responseText ?? ""
                     let status = response?.statusCode ?? 0
-                    if(status == 204){
+                    if(status == 202){
                         // Clear registration data and actions
                         self.isUserRegistered = false
                         AppLaunchCacheManager.sharedInstance.clearUserDefaults()
+                        completionHandler(AppLaunchResponse.init(JSON.null), nil)
                     }else{
                         completionHandler(nil, AppLaunchFailResponse(.UNREGISTRATION_FAILURE, responseText))
                     }
@@ -93,9 +96,13 @@ public class AppLaunch: NSObject {
                     completionHandler(nil, AppLaunchFailResponse(.UNREGISTRATION_FAILURE, (error?.localizedDescription)!))
                 }
             })
+            if (LogTimer != nil) {
+                LogTimer.invalidate()
+                sendSessionLogs()
+            }
             request.execute()
         } else {
-            completionHandler(nil, AppLaunchFailResponse(.UNREGISTRATION_FAILURE, "AppLaunch SDK is not Initialized"))
+            completionHandler(nil, AppLaunchFailResponse(.UNREGISTRATION_FAILURE, MSG__ERR_NOT_INIT))
         }
     }
     
@@ -125,7 +132,7 @@ public class AppLaunch: NSObject {
             })
             request.execute()
         }else{
-            print(MSG__ERR_METRICS_NOT_INIT)
+            print(MSG__ERR_NOT_INIT)
         }
         
     }
@@ -265,7 +272,6 @@ public class AppLaunch: NSObject {
                     if let data = responseText.data(using: String.Encoding.utf8) {
                         do {
                             let respJson = try JSON(data: data)
-                            print("response data from server \(responseText)")
                             let ExpirationTime = String(Int(AppLaunchUtils.getCurrentDateAndTime()) + Int(self.config.getCacheExpiration() * 60))
                             AppLaunchCacheManager.sharedInstance.addString(ExpirationTime, CACHE_EXPIRATION)
                             AppLaunchCacheManager.sharedInstance.addString(respJson.rawString()!, ACTION)
@@ -277,7 +283,6 @@ public class AppLaunch: NSObject {
                         }
                     }
                 }else{
-                    print("[404] Actions Not found")
                     completionHandler(nil, AppLaunchFailResponse(.FETCH_ACTIONS_FAILURE , responseText))
                 }
                 
@@ -343,7 +348,7 @@ public class AppLaunch: NSObject {
     private func IntializeSession() {
         Analytics.initialize(config: config, url: (URLBuilder?.getSessionURL())!, hasUserContext: true, collectLocation: false, deviceEvents: .lifecycle, .network)
         Analytics.isEnabled = true
-        Timer.scheduledTimer(timeInterval: TimeInterval(config.getEventFlushInterval() * 60),
+        LogTimer = Timer.scheduledTimer(timeInterval: TimeInterval(config.getEventFlushInterval() * 60),
                                                target:self,
                                                selector:#selector(AppLaunch.sendSessionLogs),
                                                userInfo:nil,
