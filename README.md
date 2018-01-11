@@ -136,21 +136,21 @@ let user = AppLaunchUser.Builder(userId: "vittal").custom(key: "email", value: "
 Initialize App Launch SDK
 
 ```
-AppLaunch.sharedInstance.initialize(region: .US_SOUTH_STAGING, appId: "your AppLaunch appGUID", clientSecret: "your AppLaunch client secret", config: AppLaunchConfig, user: AppLaunchUser, completionHandler: AppLaunchCompletionHandler)
+AppLaunch.sharedInstance.initialize(region: .US_SOUTH, appId: "your AppLaunch appGUID", clientSecret: "your AppLaunch client secret", config: AppLaunchConfig, user: AppLaunchUser, completionHandler: AppLaunchCompletionHandler)
 ```
 
 ### Get features and its properties
 
-* Use the ```AppLaunch.sharedInstance.hasFeatureWith(code: "feature code")``` to check if the feature is enabled for the app.
+* Use the ```AppLaunch.sharedInstance.isFeatureEnabled(featureCode: "feature code")``` to check if the feature is enabled for the app.
 
-* Use the ```AppLaunch.sharedInstance.getPropertyValueFor(featureWithCode: "feature code", propertyWithCode: "property code")``` to get the value of the particular property in a feature.
+* Use the ```AppLaunch.sharedInstance.getPropertyofFeature(featureCode: "feature code", propertyCode: "property code")``` to get the value of the particular property in a feature.
 
 ### Metrics
 
 To send metrics to the server use the ```AppLaunch.sharedInstance.sendMetricsWith()``` api. This sends the metrics information to the server.
 
 ```
-AppLaunch.sharedInstance.sendMetricsWith(code: "metric code")
+AppLaunch.sharedInstance.sendMetrics(code: ["metricCodes"])
 ```
 
 ### Destroy

@@ -143,8 +143,8 @@ public class AppLaunch: NSObject {
      - returns
      Bool value
      */
-    public func isFeatureEnabled(code:String) -> Bool{
-        if(AppLaunchCacheManager.sharedInstance.readJSON(code) != JSON.null) {
+    public func isFeatureEnabled(featureCode: String) -> Bool{
+        if(AppLaunchCacheManager.sharedInstance.readJSON(featureCode) != JSON.null) {
             return true
         }
         return false
@@ -160,7 +160,7 @@ public class AppLaunch: NSObject {
      - featureCode: feature code
      - propertyCode: property code
      */
-    public func getPropertyofFeature(featureCode:String , propertyCode:String) -> String{
+    public func getPropertyofFeature(featureCode: String , propertyCode: String) -> String{
         let feature = AppLaunchCacheManager.sharedInstance.readJSON(featureCode)
         if (feature != JSON.null) {
             for(_,property) in feature[PROPERTIES]{
