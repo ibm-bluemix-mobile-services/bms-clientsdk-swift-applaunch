@@ -112,7 +112,7 @@ public class AppLaunch: NSObject {
      
      - Parameter code: This is the array of metric codes.
      */
-    public func sendMetricsWith(codes: [String]) -> Void {
+    public func sendMetrics(codes: [String]) -> Void {
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
             var metricsData:JSON = JSON()
             metricsData[METRIC_CODES].arrayObject = codes
@@ -143,7 +143,7 @@ public class AppLaunch: NSObject {
      - returns
      Bool value
      */
-    public func hasFeatureWith(code:String) -> Bool{
+    public func isFeatureEnabled(code:String) -> Bool{
         if(AppLaunchCacheManager.sharedInstance.readJSON(code) != JSON.null) {
             return true
         }
@@ -157,15 +157,15 @@ public class AppLaunch: NSObject {
      String value of the property or Empty string if property/feature doesn't exist
      
      - parameters:
-     - featureWithCode: feature code
-     - propertyWithCode: property code
+     - featureCode: feature code
+     - propertyCode: property code
      */
-    public func getValueFor(featureWithCode:String , propertyWithCode:String) -> String{
-        let feature = AppLaunchCacheManager.sharedInstance.readJSON(featureWithCode)
+    public func getPropertyofFeature(featureCode:String , propertyCode:String) -> String{
+        let feature = AppLaunchCacheManager.sharedInstance.readJSON(featureCode)
         if (feature != JSON.null) {
             for(_,property) in feature[PROPERTIES]{
                 if let propertyCode = property[CODE].string{
-                    if propertyCode == propertyWithCode{
+                    if propertyCode == propertyCode{
                         return property[VALUE].stringValue
                     }
                 }
@@ -349,10 +349,10 @@ public class AppLaunch: NSObject {
         Analytics.initialize(config: config, url: (URLBuilder?.getSessionURL())!, hasUserContext: true, collectLocation: false, deviceEvents: .lifecycle, .network)
         Analytics.isEnabled = true
         LogTimer = Timer.scheduledTimer(timeInterval: TimeInterval(config.getEventFlushInterval() * 60),
-                                               target:self,
-                                               selector:#selector(AppLaunch.sendSessionLogs),
-                                               userInfo:nil,
-                                               repeats:true)
+                                        target:self,
+                                        selector:#selector(AppLaunch.sendSessionLogs),
+                                        userInfo:nil,
+                                        repeats:true)
     }
     
     @objc private func sendSessionLogs() {
@@ -360,4 +360,3 @@ public class AppLaunch: NSObject {
     }
     
 }
-
