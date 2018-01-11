@@ -44,6 +44,10 @@ public class AppLaunchConfig {
         internal var cacheExpiration: Float = 60
         internal var eventFlushInterval: Float = 60
         
+        public init() {
+            
+        }
+        
         public func fetchPolicy(_ policy: RefreshPolicy) -> Builder {
             self.policy = policy
             return self
