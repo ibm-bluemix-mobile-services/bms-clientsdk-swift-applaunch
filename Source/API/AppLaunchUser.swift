@@ -34,7 +34,7 @@ public class AppLaunchUser {
         internal var userID: String
         internal var attributes: JSON = JSON()
         
-        init(userId: String) {
+        public init(userId: String) {
             self.userID = userId
         }
         
