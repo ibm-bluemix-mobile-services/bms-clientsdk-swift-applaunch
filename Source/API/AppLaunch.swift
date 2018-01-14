@@ -34,6 +34,8 @@ public class AppLaunch: NSObject {
     
     private var LogTimer: Timer!
     
+    private var ActionRefreshTimer: Timer!
+    
     // MARK: Methods
     
     /**
@@ -112,7 +114,7 @@ public class AppLaunch: NSObject {
      
      - Parameter code: This is the array of metric codes.
      */
-    public func sendMetrics(codes: [String]) -> Void {
+    public func sendMetrics(codes: [String]) throws {
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
             var metricsData:JSON = JSON()
             metricsData[METRIC_CODES].arrayObject = codes
@@ -132,9 +134,8 @@ public class AppLaunch: NSObject {
             })
             request.execute()
         }else{
-            print(MSG__ERR_NOT_INIT)
+            throw AppLaunchError.applaunchNotIntialized
         }
-        
     }
     
     /**
@@ -143,11 +144,15 @@ public class AppLaunch: NSObject {
      - returns
      Bool value
      */
-    public func isFeatureEnabled(featureCode: String) -> Bool{
-        if(AppLaunchCacheManager.sharedInstance.readJSON(featureCode) != JSON.null) {
-            return true
+    public func isFeatureEnabled(featureCode: String) throws -> Bool{
+        if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
+            if(AppLaunchCacheManager.sharedInstance.readJSON(featureCode) != JSON.null) {
+                return true
+            }
+            return false
+        } else {
+            throw AppLaunchError.applaunchNotIntialized
         }
-        return false
     }
     
     /**
@@ -160,18 +165,22 @@ public class AppLaunch: NSObject {
      - featureCode: feature code
      - propertyCode: property code
      */
-    public func getPropertyofFeature(featureCode: String , propertyCode: String) -> String{
-        let feature = AppLaunchCacheManager.sharedInstance.readJSON(featureCode)
-        if (feature != JSON.null) {
-            for(_,property) in feature[PROPERTIES]{
-                if let propertyCode = property[CODE].string{
-                    if propertyCode == propertyCode{
-                        return property[VALUE].stringValue
+    public func getPropertyofFeature(featureCode: String , propertyCode: String) throws -> String {
+        if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
+            let feature = AppLaunchCacheManager.sharedInstance.readJSON(featureCode)
+            if (feature != JSON.null) {
+                for(_,property) in feature[PROPERTIES]{
+                    if let propertyCode = property[CODE].string{
+                        if propertyCode == propertyCode{
+                            return property[VALUE].stringValue
+                        }
                     }
                 }
             }
+            return "" }
+        else {
+            throw AppLaunchError.applaunchNotIntialized
         }
-        return ""
     }
     
     
@@ -229,24 +238,26 @@ public class AppLaunch: NSObject {
     private func getActions(_ completionHandler: @escaping AppLaunchCompletionHandler) {
         let policy = config.getPolicy()
         switch(policy) {
-        case .REFRESH_ON_EVERY_START : fetchActions(completionHandler)
+        case .REFRESH_ON_EVERY_START : refreshActions(completionHandler)
             break
         case .REFRESH_ON_EXPIRY : let expirationTimeString = AppLaunchCacheManager.sharedInstance.readString(CACHE_EXPIRATION).isEmpty ? "0" : AppLaunchCacheManager.sharedInstance.readString(CACHE_EXPIRATION)
         let expirationTime = Int(expirationTimeString)!
         let currentTime = AppLaunchUtils.getCurrentDateAndTime()
         if expirationTime < currentTime {
-            fetchActions(completionHandler)
+            refreshActions(completionHandler)
         } else {
             if (AppLaunchCacheManager.sharedInstance.readJSON(ACTION) != JSON.null) {
                 completionHandler(AppLaunchResponse(AppLaunchCacheManager.sharedInstance.readJSON(ACTION)), nil)
             } else {
-                fetchActions(completionHandler)
+                refreshActions(completionHandler)
             }
         }
             break
         case .BACKGROUND_REFRESH :
-            // TODO :  Background Refresh Mechanism
-            fetchActions(completionHandler)
+            ActionRefreshTimer = Timer.scheduledTimer(timeInterval: TimeInterval(config.getCacheExpiration() * 60),
+                                                      target:self, selector:#selector(self.fetchAction),
+                                                      userInfo:nil,
+                                                      repeats:true)
             break
         }
         // Display InApp Messages
@@ -260,7 +271,7 @@ public class AppLaunch: NSObject {
      
      - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the actions information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
      */
-    private func fetchActions(_ completionHandler: @escaping AppLaunchCompletionHandler){
+    private func refreshActions(_ completionHandler: @escaping AppLaunchCompletionHandler){
         let request = AppLaunchInvoker(url: (URLBuilder?.getActionURL())!, method: HttpMethod.GET, timeout: 60)
         request.addHeader(config.getClientSecret() , CLIENT_SECRET)
         request.setCompletionHandler({ (response, error) in
@@ -291,6 +302,16 @@ public class AppLaunch: NSObject {
             }
         })
         request.execute()
+    }
+    
+    @objc private func fetchAction() {
+        refreshActions { (success, failure) in
+            if (success != nil) {
+                print("Action Refresh Successful: " + (success?.getResponseJSON().rawString())!)
+            } else {
+                print("Action Refresh Failure: " + (failure?.getErrorMessage())!)
+            }
+        }
     }
     
     private func displayInAppMessage(_ action: JSON) -> Void {

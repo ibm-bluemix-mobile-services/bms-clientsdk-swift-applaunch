@@ -32,7 +32,11 @@ internal class AppLaunchInAppMessaging: NSObject {
                     codes.append(metric[CODE].stringValue)
                 }
                 if (!codes.isEmpty) {
-                    AppLaunch.sharedInstance.sendMetrics(codes: codes)
+                    do {
+                        try AppLaunch.sharedInstance.sendMetrics(codes: codes)
+                    } catch {
+                        print(MSG__ERR_NOT_INIT)
+                    }
                 }
             }))
         }
