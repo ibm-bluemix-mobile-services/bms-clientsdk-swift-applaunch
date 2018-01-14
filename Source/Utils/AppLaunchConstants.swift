@@ -61,6 +61,12 @@ public enum ErrorCode : Int {
     
 }
 
+
+
+public enum AppLaunchError: Error {
+    case applaunchNotIntialized
+}
+
 /**
  `AppLaunchCompletionHandler` is a callback for AppLaunch REST APIs.
  */
