@@ -37,7 +37,7 @@ Ensure that you go through [Bluemix App Launch service documentation](https://co
 
 ***
 
-##Setup App Launch Service
+## Setup App Launch Service
 
 ### Creating the service
 ![Create feature](https://github.com/ibm-bluemix-mobile-services/bms-clientsdk-android-applaunch/blob/development/Images/create_service.gif)
@@ -125,7 +125,7 @@ import IBMAppLaunch
 ```
 ### Initializing the AppLaunch SDK
 
-##### Build Configuration Object
+##### 1. Build Configuration Object
 
 ```
 let config =   AppLaunchConfig.Builder().cacheExpiration(30).eventFlushInterval(60).fetchPolicy(.REFRESH_ON_EXPIRY).build()
@@ -151,7 +151,7 @@ The AppLaunchConfig builder is used to customize the following:
  
 	**Note**: Do not rely on the default implementation of the deviceID generation  mechanism as it is not guarenteed to be unique.
 
-##### Build User Object
+##### 2. Build User Object
 
 ```
 let user = AppLaunchUser.Builder(userId: "vittal").custom(key: "email", value: "vittalpai@xyz.com").build()
@@ -163,7 +163,7 @@ The AppLaunchUser builder is used to provide the following information:
 
 `custom`: This can be used to pass any optional custom user attributes. 
 
-##### Initialize App Launch SDK
+##### 3. Initialize App Launch SDK
 
 ```
 AppLaunch.sharedInstance.initialize(region: .US_SOUTH, appId: "appGUID", clientSecret: "clientSecret", config: AppLaunchConfig, user: AppLaunchUser, completionHandler: AppLaunchCompletionHandler)
