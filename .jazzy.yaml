@@ -1,0 +1,35 @@
+module: AppLaunch
+author: IBM
+github_url: https://github.com/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch
+
+skip_undocumented: false
+clean: true
+hide_documentation_coverage: true
+
+
+custom_categories:
+  - name: Client
+    children:
+    - AppLaunch
+
+  - name: Response
+    children:
+    - AppLaunchResponse
+    - AppLaunchFailResponse
+
+  - name: TypeAlias
+    children:
+      - AppLaunchCompletionHandler
+
+  - name: Constants
+    children:
+    - US_SOUTH
+    - UNITED_KINGDOM
+    - SYDNEY
+    - US_SOUTH_STAGING
+    - UNITED_KINGDOM_STAGING
+    - SYDNEY_STAGING
+    - US_SOUTH_DEV
+    - UNITED_KINGDOM_DEV
+    - SYDNEY_DEV
+    

@@ -8,25 +8,80 @@
 
 import Foundation
 
+/**
+ Enum and TypeAlias which are available in AppLaunch SDK
+ */
+
+/**
+ `ICRegion` is an enumerator which can be used to specify IBM Cloud region where AppLaunch Service is hosted.
+ */
+public enum ICRegion : String {
+    
+    case US_SOUTH = ".ng.bluemix.net"
+    
+    case UNITED_KINGDOM = ".eu-gb.bluemix.net"
+    
+    case SYDNEY = ".au-syd.bluemix.net"
+    
+    case US_SOUTH_STAGING = ".stage1.ng.bluemix.net"
+    
+    case UNITED_KINGDOM_STAGING = ".stage1.eu-gb.bluemix.net"
+    
+    case US_SOUTH_DEV = "dev.ng.bluemix.net"
+    
+}
+
+/**
+ `RefreshPolicy` is an enumerator which can be used to specify the session refresh policy
+ */
+public enum RefreshPolicy : Int {
+    
+    case REFRESH_ON_EVERY_START = 0
+    
+    case REFRESH_ON_EXPIRY = 1
+    
+    case BACKGROUND_REFRESH = 2
+    
+}
+
+/**
+ `ErrorCode` is an enumerator which contains error information.
+ */
+public enum ErrorCode : Int {
+    
+    case INITIALIZATION_FAILURE = 0
+    
+    case REGISTRATION_FAILURE = 1
+    
+    case FETCH_ACTIONS_FAILURE = 2
+    
+    case DEFAULT_FEATURE_LOAD_FAILURE = 3
+    
+    case UNREGISTRATION_FAILURE = 4
+    
+}
+
+
+
+public enum AppLaunchError: Error {
+    case applaunchNotIntialized
+}
+
+/**
+ `AppLaunchCompletionHandler` is a callback for AppLaunch REST APIs.
+ */
+public typealias AppLaunchCompletionHandler = (_ Response:AppLaunchResponse?, _ Error:AppLaunchFailResponse? ) -> Void
+
+
 //
 // ─── INTERNAL CONSTANTS ───────────────────────────────────────────────────────────
 //
-
-internal let MOBILESERVICES:String = "http://mobileservices"
-
-internal let APPLAUNCH_CONTEXT:String = "applaunch/v1"
 
 internal let APPLICATION_ID:String = "applicationId"
 
 internal let IOS:String = "iOS"
 
 internal let DEVICE_ID:String = "deviceId"
-
-internal let MODEL:String = "model"
-
-internal let BRAND:String = "brand"
-
-internal let OS_VERSION:String = "OSVersion"
 
 internal let PLATFORM:String = "platform"
 
@@ -38,62 +93,40 @@ internal let APP_NAME:String = "appName"
 
 internal let USER_ID:String = "userId"
 
-internal let APPLE:String = "Apple"
-
-internal let BUTTON_NAME:String = "buttonName"
-
-internal let BUTTON_TYPE:String = "buttonType"
-
-internal let BUTTON_VALUE:String = "buttonValue"
-
-internal let INVOKE_FUNCTION:String = "invoke-function"
-
-internal let NAVIGATE:String = "navigate"
+internal let ATTRIBUTES:String = "attributes"
 
 internal let APPLICATION_JSON = "application/json; charset = UTF-8"
 
 internal let CONTENT_TYPE = "Content-Type"
 
-internal let IS_USER_REGISTERED = "IS_USER_REGISTERED"
-
-internal let TRUE = "true"
-
 internal let METRIC_CODES = "metricCodes"
+
+internal let METRICS = "metrics"
+
+internal let ACTION = "action"
 
 internal let CLIENT_SECRET = "clientSecret"
 
 internal let REGION = "region"
 
-internal let SERVICE_NAME:String = "AppLaunch"
-
-internal let JSON_PATH_EXTENSION:String = ".json"
-
-internal let JSON_NAME:String = "json"
-
 internal let NAME:String = "name"
 
 internal let CODE:String = "code"
 
-internal let FEATURES:String = "AppLaunchFeatures"
+internal let FEATURES:String = "features"
 
-//
-// ─── PUBLIC CONSTANTS ───────────────────────────────────────────────────────────
-//
+internal let TRIGGERS:String = "triggers"
 
-public let US_SOUTH:String = ".us-south.containers.mybluemix.net"
+internal let PROPERTIES:String = "properties"
 
-public let UNITED_KINGDOM:String = ".eu-gb.containers.mybluemix.net"
+internal let VALUE:String = "value"
 
-public let SYDNEY:String = ".sydney.containers.mybluemix.net"
+internal let INAPP:String = "inApp"
 
-public let US_SOUTH_STAGING:String = "-staging.us-south.containers.mybluemix.net"
+internal let IMAGE_URL:String = "imageUrl"
 
-public let UNITED_KINGDOM_STAGING:String = "-staging.eu-gb.containers.mybluemix.net"
+internal let LAYOUT:String = "layout"
 
-public let SYDNEY_STAGING:String = "-staging.sydney.containers.mybluemix.net"
+internal let CACHE_EXPIRATION:String = "CACHE_EXPIRATION"
 
-public let US_SOUTH_DEV:String = "-dev.us-south.containers.mybluemix.net"
 
-public let UNITED_KINGDOM_DEV:String = "-dev.eu-gb.containers.mybluemix.net"
-
-public let SYDNEY_DEV:String = "-dev.sydney.containers.mybluemix.net"

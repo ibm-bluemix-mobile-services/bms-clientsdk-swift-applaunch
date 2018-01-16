@@ -7,23 +7,10 @@
 //
 
 import Foundation
+import BMSCore
+import SwiftyJSON
 
 internal class AppLaunchUtils:NSObject{
-    
-    class func saveValueToNSUserDefaults (value:String, key:String) {
-        UserDefaults.standard.set(value, forKey: key)
-        UserDefaults.standard.synchronize()
-        print("Saving value to NSUserDefaults with Key: \(key) and Value: \(value)")
-    }
-    
-    class func getValueToNSUserDefaults (key:String) -> String {
-        var value = ""
-        if(UserDefaults.standard.value(forKey: key) != nil){
-            value = UserDefaults.standard.value(forKey: key) as! String
-        }
-        print("Getting value for NSUserDefaults Key: \(key) and Value: \(value)")
-        return value
-    }
     
     class func validateString(object:String) -> Bool{
         if (object.isEmpty || object == "") {
@@ -32,64 +19,64 @@ internal class AppLaunchUtils:NSObject{
         return true
     }
     
-    class func saveUserContext(userId:String, applicationId:String, deviceId:String, region:String){
-        print("Saving user context :: userId:\(userId), applicationId:\(applicationId), deviceId:\(deviceId), region:\(region)")
-        UserDefaults.standard.set(userId, forKey: USER_ID)
-        UserDefaults.standard.set(deviceId, forKey: DEVICE_ID)
-        UserDefaults.standard.set(applicationId, forKey: APP_ID)
-        UserDefaults.standard.set(region, forKey: REGION)
-        UserDefaults.standard.synchronize()
+    class func getDeviceID() -> String {
+        return BMSClient.sharedInstance.authorizationManager.deviceIdentity.ID!
     }
     
-    class func userNeedsToBeRegistered(userId:String, applicationId:String, deviceId:String, region:String)->Bool{
-        var needsToBeRegistered = true
-        var existingUserID = ""
-        var existingApplicationId = ""
-        var existingDeviceId = ""
-        var existingRegion = ""
-        
-        if(UserDefaults.standard.value(forKey: USER_ID) != nil){
-            existingUserID = UserDefaults.standard.value(forKey: USER_ID) as! String
-            print("existing user ID : \(existingUserID)")
-            if(existingUserID == userId){
-                needsToBeRegistered = false
-            } else {
-                return true
-            }
+    class func getRegistrationData(_ user: AppLaunchUser,_ config: AppLaunchConfig) -> JSON {
+        var registrationData:JSON = JSON()
+        registrationData[DEVICE_ID].string = config.getDeviceID()
+        registrationData[PLATFORM].string = IOS
+        registrationData[USER_ID].string = user.getUserId()
+        if (user.getAttributes() != JSON.null) {
+            registrationData[ATTRIBUTES] = user.getAttributes()
         }
-        
-        if(UserDefaults.standard.value(forKey: DEVICE_ID) != nil){
-            existingDeviceId = UserDefaults.standard.value(forKey: DEVICE_ID) as! String
-            print("existing device ID : \(existingDeviceId)")
-            if(existingDeviceId == deviceId){
-                needsToBeRegistered = false
-            } else {
-                return true
-            }
-        }
-        
-        if(UserDefaults.standard.value(forKey: APP_ID) != nil){
-            existingApplicationId = UserDefaults.standard.value(forKey: APP_ID) as! String
-            print("existing app ID : \(existingApplicationId)")
-            if(existingApplicationId == applicationId){
-                needsToBeRegistered = false
-            } else {
-                return true
-            }
-        }
-        
-        if(UserDefaults.standard.value(forKey: REGION) != nil){
-            existingRegion = UserDefaults.standard.value(forKey: REGION) as! String
-            print("existing region ID : \(existingRegion)")
-            if(existingRegion == region){
-                needsToBeRegistered = false
-            } else {
-                return true
-            }
-        }
-        
-        print("needs to be registered \(needsToBeRegistered)")
-        return needsToBeRegistered
+        return registrationData
     }
-
+    
+    class func saveUserContext(_ user: AppLaunchUser,_ config: AppLaunchConfig){
+        let defaults = AppLaunchCacheManager.sharedInstance
+        defaults.addString(user.getUserId(), USER_ID)
+        defaults.addString(config.getDeviceID(), DEVICE_ID)
+        defaults.addString(config.getAppID(), APP_ID)
+        defaults.addString(config.getICRegion(), REGION)
+        if user.getAttributes() != JSON.null {
+            defaults.addString(user.getAttributes().rawString()!, ATTRIBUTES)
+        }
+    }
+    
+    class func userNeedsToBeRegistered() -> Bool {
+        let defaults = AppLaunchCacheManager.sharedInstance
+        
+        if (!defaults.readString(USER_ID).isEmpty && !defaults.readString(DEVICE_ID).isEmpty && !defaults.readString(APP_ID).isEmpty && !defaults.readString(REGION).isEmpty) {
+            return false
+        }
+        return true
+    }
+    
+    class func isUpdateRegistrationRequired(_ user: AppLaunchUser,_ config: AppLaunchConfig) -> Bool {
+        let defaults = AppLaunchCacheManager.sharedInstance
+        if userNeedsToBeRegistered() {
+            return false
+        }
+        if (defaults.readString(USER_ID) == user.getUserId() && defaults.readJSON(ATTRIBUTES) == user.getAttributes() && defaults.readString(DEVICE_ID) == config.getDeviceID() && defaults.readString(APP_ID) == config.getAppID() && defaults.readString(REGION) == config.getICRegion()) {
+            // Stored app data and device data is not changed
+            return false
+        }
+        return true
+    }
+    
+    class func getCurrentDate() -> Int {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd"
+        return Int(formatter.string(from: Date()))!
+    }
+    
+    class func getCurrentDateAndTime() -> Int {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMddhhmmss"
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        return Int(formatter.string(from: Date()))!
+    }
+    
 }
