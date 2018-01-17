@@ -39,12 +39,12 @@ public class AppLaunch: NSObject {
     // MARK: Methods
     
     /**
-     The required initializer for the `AppLaunch` class.
+     The required initializer for the `AppLaunch` SDK.
      
-     This method will intialize the AppLaunch with appID, clientSecret and region based registration.
+     This method will intialize the AppLaunch with credentials, user and configuration details.
      
      - parameter region: IBM Cloud region suffix specifies the location where the AppLaunch service is hosted
-     - parameter applicationId: app GUID value
+     - parameter appId: app GUID value
      - parameter clientSecret: appLaunch client secret value
      - parameter config: appLaunch client configuration object
      - parameter user: appLaunch client user object
@@ -74,12 +74,12 @@ public class AppLaunch: NSObject {
     
     
     /**
-     This Methode used to unregister the device from the IBM Cloud AppLaunch service and It clears the stored cache.
+     This Methode clears the stored service information and unregisters the device from the IBM Cloud AppLaunch service.
      
      - parameter completionHandler: A completion-handler callback function. In the case of a successful completion, the success information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
      */
     public func destroy(completionHandler: @escaping AppLaunchCompletionHandler) {
-        if(isInitialized) {
+        if(isInitialized && isUserRegistered) {
             let request = AppLaunchInvoker(url: URLBuilder!.getUserURL(), method: HttpMethod.DELETE, timeout: 60)
             request.addHeader(config.getClientSecret(), CLIENT_SECRET)
             request.setCompletionHandler({(response,error) in
@@ -113,6 +113,8 @@ public class AppLaunch: NSObject {
      This Methode used to send metrics information to the IBM Cloud AppLaunch service.
      
      - Parameter code: This is the array of metric codes.
+     
+     - Throws: applaunchNotIntialized error if applaunch service is not initialized
      */
     public func sendMetrics(codes: [String]) throws {
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
@@ -125,7 +127,7 @@ public class AppLaunch: NSObject {
             request.setCompletionHandler({(response,error) in
                 
                 let status = response?.statusCode ?? 0
-                if(status == 200){
+                if(status == 202){
                     print("sent metrics successfully for the code(s) : \(codes.joined(separator: ", "))")
                 }else if let responseError = error{
                     print("Error in sending metrics for the code(s) : \(codes.joined(separator: ", ")) with error :\(responseError.localizedDescription)")
@@ -143,6 +145,8 @@ public class AppLaunch: NSObject {
      
      - returns
      Bool value
+     
+     - Throws: applaunchNotIntialized error if applaunch service is not initialized
      */
     public func isFeatureEnabled(featureCode: String) throws -> Bool{
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
@@ -164,6 +168,8 @@ public class AppLaunch: NSObject {
      - parameters:
      - featureCode: feature code
      - propertyCode: property code
+     
+     - Throws: applaunchNotIntialized error if applaunch service is not initialized
      */
     public func getPropertyofFeature(featureCode: String , propertyCode: String) throws -> String {
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
@@ -215,16 +221,15 @@ public class AppLaunch: NSObject {
             request.setCompletionHandler({(response,error) in
                 let status = response?.statusCode ?? 0
                 if(response != nil){
-                    if(status == 200 || status == 201 || status == 202 || status == 405){
+                    if(status == 202){
                         // Registration Success. Save User Context and proceed with getActions Call
+                        self.isUserRegistered = true
                         Analytics.userIdentity = self.user.getUserId()
                         AppLaunchUtils.saveUserContext(self.user, self.config)
                         self.getActions(completionHandler)
                     }else{
-                        if (status == 400) {
-                            self.isUserRegistered = false
-                            AppLaunchCacheManager.sharedInstance.clearUserDefaults()
-                        }
+                        self.isUserRegistered = false
+                        AppLaunchCacheManager.sharedInstance.clearUserDefaults()
                         completionHandler(nil, AppLaunchFailResponse(.REGISTRATION_FAILURE ,  (response?.responseText)!))
                     }
                 }else {
@@ -279,7 +284,7 @@ public class AppLaunch: NSObject {
                 let status = response?.statusCode ?? 0
                 let responseText = response?.responseText ?? ""
                 
-                if(status == 200 || status == 201){
+                if(status == 200){
                     if let data = responseText.data(using: String.Encoding.utf8) {
                         do {
                             let respJson = try JSON(data: data)

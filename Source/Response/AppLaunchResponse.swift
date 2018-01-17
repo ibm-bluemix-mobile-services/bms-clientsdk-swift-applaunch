@@ -22,7 +22,7 @@ public class AppLaunchResponse {
     /**
      This method will intialize the AppLaunchResponse with responseJSON
      
-     - parameter responseJSON: Actions JSON
+     - parameter responseJSON: Engagements JSON
      */
     internal init(_ responseJSON: JSON) {
         self.responseJSON = responseJSON
@@ -34,7 +34,7 @@ public class AppLaunchResponse {
      
      This Methode returns the response JSON for the AppLaunch calling API
      
-     - returns: responseJSON: This returns the Actions JSON from the AppLaunch Service
+     - returns: responseJSON: This returns the Engagements JSON from the AppLaunch Service
      */
     public func getResponseJSON() -> JSON {
         return responseJSON

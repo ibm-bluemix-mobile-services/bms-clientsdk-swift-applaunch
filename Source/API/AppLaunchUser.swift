@@ -16,7 +16,7 @@ import SwiftyJSON
  This method will intialize the AppLaunchUser with the help of Builder Class.
  
  - parameter userId: userID value
- - parameter custom(Optional): custome user information key and value pair
+ - parameter custom(Optional): This can be used to pass any optional custom user attributes.
  
  */
 public class AppLaunchUser {
