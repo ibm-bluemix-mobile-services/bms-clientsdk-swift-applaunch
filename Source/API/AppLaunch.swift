@@ -48,7 +48,7 @@ public class AppLaunch: NSObject {
      - parameter clientSecret: appLaunch client secret value
      - parameter config: appLaunch client configuration object
      - parameter user: appLaunch client user object
-     - parameter completionHandler: A completion-handler callback function. In the case of a successful intialization, the actions JSON is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error code and the information is returned in the AppLaunchFailResponse
+     - parameter completionHandler: `AppLaunchCompletionHandler` callback function. In the case of a successful intialization, the engagements JSON is returned in the `AppLaunchResponse`. In the case of a unsuccessful completion, the error code and the information is returned in the `AppLaunchFailResponse`
      */
     public func initialize(region: ICRegion, appId: String, clientSecret: String, config: AppLaunchConfig, user: AppLaunchUser, completionHandler: @escaping AppLaunchCompletionHandler) {
         
@@ -76,7 +76,7 @@ public class AppLaunch: NSObject {
     /**
      This Methode clears the stored service information and unregisters the device from the IBM Cloud AppLaunch service.
      
-     - parameter completionHandler: A completion-handler callback function. In the case of a successful completion, the success information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
+     - parameter completionHandler: `AppLaunchCompletionHandler` callback function. In the case of a successful completion, the success information is returned in the `AppLaunchResponse`. In the case of a unsuccessful completion, the error information is returned in the `AppLaunchFailResponse`
      */
     public func destroy(completionHandler: @escaping AppLaunchCompletionHandler) {
         if(isInitialized && isUserRegistered) {
@@ -114,7 +114,7 @@ public class AppLaunch: NSObject {
      
      - Parameter code: This is the array of metric codes.
      
-     - Throws: applaunchNotIntialized error if applaunch service is not initialized
+     - Throws: `applaunchNotIntialized` error if applaunch service is not initialized
      */
     public func sendMetrics(codes: [String]) throws {
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
@@ -143,8 +143,7 @@ public class AppLaunch: NSObject {
     /**
      Checks if the feature is enabled for the app
      
-     - returns
-     Bool value
+     - returns: Bool value
      
      - Throws: applaunchNotIntialized error if applaunch service is not initialized
      */
@@ -162,8 +161,7 @@ public class AppLaunch: NSObject {
     /**
      Returns the value for particular property in a feature
      
-     - returns
-     String value of the property or Empty string if property/feature doesn't exist
+     - returns: String value of the property or Empty string if property/feature doesn't exist
      
      - parameters:
      - featureCode: feature code

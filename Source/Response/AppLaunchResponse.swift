@@ -20,7 +20,7 @@ public class AppLaunchResponse {
     
     
     /**
-     This method will intialize the AppLaunchResponse with responseJSON
+     This method will intialize the `AppLaunchResponse` with responseJSON
      
      - parameter responseJSON: Engagements JSON
      */
@@ -32,7 +32,7 @@ public class AppLaunchResponse {
     
     /**
      
-     This Methode returns the response JSON for the AppLaunch calling API
+     This Methode returns the response JSON for the `AppLaunch` calling API
      
      - returns: responseJSON: This returns the Engagements JSON from the AppLaunch Service
      */

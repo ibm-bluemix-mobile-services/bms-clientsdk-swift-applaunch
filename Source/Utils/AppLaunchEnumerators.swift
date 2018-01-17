@@ -9,11 +9,16 @@
 import Foundation
 
 /**
- Enumerators and TypeAlias which are available in AppLaunch SDK
- */
-
-/**
- `ICRegion` is an enumerator which can be used to specify IBM Cloud region where AppLaunch Service is hosted.
+ ICRegion is an enumerator which can be used to specify IBM Cloud region where AppLaunch Service is hosted.
+ 
+ ````
+ case US_SOUTH
+ case UNITED_KINGDOM
+ case SYDNEY
+ case US_SOUTH_STAGING
+ case UNITED_KINGDOM_STAGING
+ case US_SOUTH_DEV
+ ````
  */
 public enum ICRegion : String {
     
