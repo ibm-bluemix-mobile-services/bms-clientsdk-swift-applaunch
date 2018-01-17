@@ -114,7 +114,7 @@ public class AppLaunch: NSObject {
      
      - Parameter code: This is the array of metric codes.
      
-     - Throws: `applaunchNotIntialized` error if applaunch service is not initialized
+     - Throws: `AppLaunchError.applaunchNotIntialized` error if applaunch service is not initialized
      */
     public func sendMetrics(codes: [String]) throws {
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
@@ -145,7 +145,7 @@ public class AppLaunch: NSObject {
      
      - returns: Bool value
      
-     - Throws: applaunchNotIntialized error if applaunch service is not initialized
+     - Throws: `AppLaunchError.applaunchNotIntialized` error if applaunch service is not initialized
      */
     public func isFeatureEnabled(featureCode: String) throws -> Bool{
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
@@ -167,7 +167,7 @@ public class AppLaunch: NSObject {
      - featureCode: feature code
      - propertyCode: property code
      
-     - Throws: applaunchNotIntialized error if applaunch service is not initialized
+     - Throws: `AppLaunchError.applaunchNotIntialized` erorr if applaunch service is not initialized
      */
     public func getPropertyofFeature(featureCode: String , propertyCode: String) throws -> String {
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
