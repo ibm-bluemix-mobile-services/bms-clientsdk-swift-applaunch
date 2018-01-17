@@ -10,14 +10,14 @@ import Foundation
 import SwiftyJSON
 
 /**
- AppLaunchConfig contains configuration of AppLaunch Service which is used by AppLaunch SDK
+ AppLaunchConfig contains configuration of AppLaunch Service which is used by `AppLaunch` APIs
  
- This method will intialize the AppLaunchConfig with the help of Builder Class. The builder class parameters are optional,
+ This method will intialize the AppLaunchConfig with the help of Builder Class. The builder class parameters are optional.
  
- - parameter cacheExpiration(Optional): Cache expiration timeout value
- - parameter deviceID(Optional): used to ovveride device ID. AppLaunch SDK generates deviceID by default if this is not set.
- - parameter eventFlushInterval(Optional): Event Flish interval value
- - parameter fetchPolicy(Optional): Actions fetch policy
+ - parameter cacheExpiration(Optional): Decides the time interval of the engagements should be valid for. On expiration time the actions are fetched from the server. This parameter has effect when the RefreshPolicy is set to RefreshPolicy.REFRESH_ON_EXPIRY or RefreshPolicy.BACKGROUND_REFRESH. The default value is 30 minutes.
+ - parameter deviceID(Optional): used to override device ID. This parameter must be unique. If not specified, default deviceID generation mechanism is used by SDK.
+ - parameter eventFlushInterval(Optional): Decides the time interval of the events which should be sent to the server. The default value is 30 minutes.
+ - parameter fetchPolicy(Optional): This parameter decides on how frequently the engagements should be fetched from the server.
  
  */
 public class AppLaunchConfig {
@@ -37,37 +37,60 @@ public class AppLaunchConfig {
         self.deviceID = builder.deviceID
     }
     
+    /**
+     Builder class of AppLaunchConfig
+     */
     public class Builder {
         // default values
         internal var policy: RefreshPolicy = .REFRESH_ON_EVERY_START
         internal var deviceID: String = AppLaunchUtils.getDeviceID()
-        internal var cacheExpiration: Float = 60
-        internal var eventFlushInterval: Float = 60
+        internal var cacheExpiration: Float = 30
+        internal var eventFlushInterval: Float = 30
         
+        /**
+         Initializer for builder class of AppLanchConfig
+         */
         public init() {
             
         }
         
+        /**
+         This method can be used to set `RefreshPolicy` decides on how frequently the engagements should be fetched from the server. If not set, The default value will be `RefreshPolicy.REFRESH_ON_EVERY_START`.
+         */
         public func fetchPolicy(_ policy: RefreshPolicy) -> Builder {
             self.policy = policy
             return self
         }
         
+        /**
+         This method can be used to set `cacheExpiration` time which decides the time interval of the engagements should be valid for. On expiration time the actions are fetched from the server. This parameter has effect when the RefreshPolicy is set to `RefreshPolicy.REFRESH_ON_EXPIRY` or `RefreshPolicy.BACKGROUND_REFRESH`. If not set, The default value will be 30 minutes.
+         */
         public func cacheExpiration(_ cacheExpiration: Float) -> Builder {
             self.cacheExpiration = cacheExpiration
             return self
         }
         
+        /**
+         This method can be used to set `eventFlushInterval` time which decides the time interval of the events which should be sent to the server. If not set, The default value will be 30 minutes.
+         */
         public func eventFlushInterval(_ eventFlushInterval: Float) -> Builder {
             self.eventFlushInterval = eventFlushInterval
             return self
         }
         
+        /**
+         This method can be used to set `deviceID` value which is used to override device ID. This parameter must be unique. If not specified, default deviceID generation mechanism is used by SDK.
+         */
         public func deviceID(_ deviceID: String) -> Builder {
             self.deviceID = deviceID
             return self
         }
         
+        /**
+         This method builds AppLaunch Configuration object.
+         
+         - returns: `AppLaunchConfig` object
+         */
         public func build() -> AppLaunchConfig {
             return AppLaunchConfig(self)
         }

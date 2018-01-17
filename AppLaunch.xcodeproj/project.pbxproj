@@ -22,7 +22,7 @@
 
 /* Begin PBXBuildFile section */
 		480BF79E1F763CAB00C70D6C /* AppLaunch.h in Headers */ = {isa = PBXBuildFile; fileRef = 480BF79C1F763CAB00C70D6C /* AppLaunch.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		480BF7A51F764C7200C70D6C /* AppLaunchConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7A41F764C7200C70D6C /* AppLaunchConstants.swift */; };
+		480BF7A51F764C7200C70D6C /* AppLaunchEnumerators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7A41F764C7200C70D6C /* AppLaunchEnumerators.swift */; };
 		480BF7A71F764E0B00C70D6C /* AppLaunch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7A61F764E0B00C70D6C /* AppLaunch.swift */; };
 		480BF7A91F764FD800C70D6C /* AppLaunchUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7A81F764FD800C70D6C /* AppLaunchUtils.swift */; };
 		480BF7AD1F765ED400C70D6C /* AppLaunchMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480BF7AC1F765ED400C70D6C /* AppLaunchMessages.swift */; };
@@ -61,7 +61,7 @@
 		480BF7991F763CAA00C70D6C /* AppLaunch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppLaunch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		480BF79C1F763CAB00C70D6C /* AppLaunch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppLaunch.h; sourceTree = "<group>"; };
 		480BF79D1F763CAB00C70D6C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		480BF7A41F764C7200C70D6C /* AppLaunchConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchConstants.swift; sourceTree = "<group>"; };
+		480BF7A41F764C7200C70D6C /* AppLaunchEnumerators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchEnumerators.swift; sourceTree = "<group>"; };
 		480BF7A61F764E0B00C70D6C /* AppLaunch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunch.swift; sourceTree = "<group>"; };
 		480BF7A81F764FD800C70D6C /* AppLaunchUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchUtils.swift; sourceTree = "<group>"; };
 		480BF7AC1F765ED400C70D6C /* AppLaunchMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchMessages.swift; sourceTree = "<group>"; };
@@ -174,7 +174,7 @@
 			isa = PBXGroup;
 			children = (
 				480BF7AC1F765ED400C70D6C /* AppLaunchMessages.swift */,
-				480BF7A41F764C7200C70D6C /* AppLaunchConstants.swift */,
+				480BF7A41F764C7200C70D6C /* AppLaunchEnumerators.swift */,
 				480BF7A81F764FD800C70D6C /* AppLaunchUtils.swift */,
 			);
 			path = Utils;
@@ -422,7 +422,7 @@
 				C798DE291FFE37C700803D14 /* Constants.swift in Sources */,
 				C798DE301FFE37D800803D14 /* AppLaunchUser.swift in Sources */,
 				480BF7A71F764E0B00C70D6C /* AppLaunch.swift in Sources */,
-				480BF7A51F764C7200C70D6C /* AppLaunchConstants.swift in Sources */,
+				480BF7A51F764C7200C70D6C /* AppLaunchEnumerators.swift in Sources */,
 				C7D9FD1A1FE7B8D9009932AD /* AppLaunchResponse.swift in Sources */,
 				C7D4DAA61FE2507F007C9E98 /* AppLaunchInAppMessaging.swift in Sources */,
 				C798DE2A1FFE37C700803D14 /* Error.swift in Sources */,

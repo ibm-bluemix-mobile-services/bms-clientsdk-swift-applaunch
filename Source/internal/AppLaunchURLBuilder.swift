@@ -23,7 +23,7 @@ internal class AppLaunchURLBuilder {
     private let APPLAUNCH_CONTEXT:String = "/applaunch/v1"
     
     
-    init(_ region:String,_ appID:String,_ deviceID:String) {
+    init(_ region: String,_ appID: String,_ deviceID: String) {
         self.baseURL = MOBILESERVICES + region + APPLAUNCH_CONTEXT
         self.applicationID = appID
         self.deviceID = deviceID
