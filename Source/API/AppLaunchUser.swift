@@ -11,13 +11,9 @@ import SwiftyJSON
 
 
 /**
- AppLaunchUser contains user information which is used by AppLaunch SDK
+ `AppLaunchUser` contains user information which is used by `AppLaunch` APIs
  
  This method will intialize the AppLaunchUser with the help of Builder Class.
- 
- - parameter userId: userID value
- - parameter custom(Optional): custome user information key and value pair
- 
  */
 public class AppLaunchUser {
     
@@ -29,20 +25,36 @@ public class AppLaunchUser {
         self.attributes = builder.attributes
     }
     
+    /**
+     Builder class of `AppLaunchUser`
+     */
     public class Builder {
         
         internal var userID: String
         internal var attributes: JSON = JSON()
         
+        /**
+         Initializer for builder class of `AppLaunchUser`
+         
+         - parameter userId: userID value.
+         */
         public init(userId: String) {
             self.userID = userId
         }
         
+        /**
+          This is an optional method which can be used to set any custom user attributes.
+         */
         public func custom(key: String, value: String) -> Builder {
             self.attributes[key].stringValue = value
             return self
         }
         
+        /**
+         This method builds AppLaunch User object.
+         
+         - returns: `AppLaunchUser` object
+         */
         public func build() -> AppLaunchUser {
             return AppLaunchUser(self)
         }

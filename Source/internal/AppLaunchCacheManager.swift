@@ -76,18 +76,6 @@ internal class AppLaunchCacheManager {
         }
     }
     
-    //    func isExpired() -> Bool{
-    //        let now = Date()
-    //
-    //        let expirationTime = readString("EXPIRATION") as Date
-    //        if (expirationTime.compare(now) == ComparisonResult.orderedAscending) {
-    //            clearString(INAPP)
-    //            clearString(FEATURES)
-    //        }
-    //        return expiresAtDate.compare(now) == ComparisonResult.orderedAscending
-    //    }
-    //    
-    
     private func addActionToCache(_ action: JSON) -> Void{
         lock.lock()
         defer {lock.unlock()}

@@ -34,7 +34,7 @@ public class AppLaunchFailResponse {
     
     /**
      
-     This Methode returns the error code for the AppLaunch calling API
+     This Methode returns the error code for the `AppLaunch` calling API
      
      - returns: errorCode: This returns the error code value from the AppLaunch Service
      */
@@ -44,7 +44,7 @@ public class AppLaunchFailResponse {
     
     /**
      
-     This Methode returns the error message for the AppLaunch calling API
+     This Methode returns the error message for the `AppLaunch` calling API
      
      - returns: errorMessage: This returns the error message value from the AppLaunch Service
      */
