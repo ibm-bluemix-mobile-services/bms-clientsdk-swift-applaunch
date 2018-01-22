@@ -3,9 +3,9 @@
 [![Build Status](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch.svg?branch=master)](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)
 [![CocoaPods](https://img.shields.io/cocoapods/v/IBMAppLaunch.svg)](https://github.com/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)
 
-This Swift SDK for IBM Cloud App Launch provides a library for developers to build iOS mobile applications.
+This Swift SDK for App Launch on IBM Cloud services, provides a library for developers to build mobile applications on iOS devices.
 
->IBM Cloud App Launch service lets developers build engaging apps by controlling reach and roll out of App features while measuring the defined metrics.
+>App Launch on IBM Cloud services enables the developers to build engaging apps by controlling reach and roll out of App features while measuring the defined metrics.
 
 Ensure that you go through [IBM Cloud App Launch service documentation](https://console-regional.ng.bluemix.net/docs/services/app-launch/index.html) before you start.
 
@@ -59,7 +59,7 @@ Ensure that you go through [IBM Cloud App Launch service documentation](https://
 
 ## Installation
 
-The IBM Cloud Mobile Services Swift SDKs are available via [Cocoapods](http://cocoapods.org/) and [Carthage](https://github.com/Carthage/Carthage).
+The Swift SDKs for IBM Cloud Mobile services are available via [Cocoapods](http://cocoapods.org/) and [Carthage](https://github.com/Carthage/Carthage).
 
 ### Cocoapods
 To install AppLaunch using Cocoapods, add it to your Podfile:
