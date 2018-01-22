@@ -3,11 +3,11 @@
 [![Build Status](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch.svg?branch=master)](https://travis-ci.org/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)
 [![CocoaPods](https://img.shields.io/cocoapods/v/IBMAppLaunch.svg)](https://github.com/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch)
 
-This is the Swift SDK for IBM App Launch service.
+This Swift SDK for IBM Cloud App Launch provides a library for developers to build iOS mobile applications.
 
->The Bluemix App Launch service on Bluemix helps in controlled reach of app features. It provides a unified service to customize and personalize your applications to different audience with just few clicks.
+>IBM Cloud App Launch service lets developers build engaging apps by controlling reach and roll out of App features while measuring the defined metrics.
 
-Ensure that you go through [Bluemix App Launch service documentation](https://console-regional.ng.bluemix.net/docs/services/app-launch/index.html) before you start.
+Ensure that you go through [IBM Cloud App Launch service documentation](https://console-regional.ng.bluemix.net/docs/services/app-launch/index.html) before you start.
 
 ***
 
@@ -59,7 +59,7 @@ Ensure that you go through [Bluemix App Launch service documentation](https://co
 
 ## Installation
 
-The Bluemix Mobile Services Swift SDKs are available via [Cocoapods](http://cocoapods.org/) and [Carthage](https://github.com/Carthage/Carthage).
+The IBM Cloud Mobile Services Swift SDKs are available via [Cocoapods](http://cocoapods.org/) and [Carthage](https://github.com/Carthage/Carthage).
 
 ### Cocoapods
 To install AppLaunch using Cocoapods, add it to your Podfile:
@@ -93,10 +93,10 @@ pod install
 
 Before running the `pod install` command, make sure to use Cocoapods version [1.1.0.beta.1](https://github.com/CocoaPods/CocoaPods/releases/tag/1.1.0.beta.1).
 
-For apps built with Swift 3.2, you may receive a prompt saying "Convert to Current Swift Syntax?" when opening your project in Xcode 9 (following the installation of BMSCore) do not convert AppLaunch or BMSCore.
+Apps built with Swift 3.2 may receive a message "Convert to Current Swift Syntax?" while opening the project on Xcode 9, make sure you do not convert AppLaunch or BMSCore.
 
 This will installs your dependencies and creates a new Xcode workspace.
-***Note:*** Ensure that you always open the new Xcode workspace, instead of the original Xcode project file:
+***Note:*** Always open a new Xcode workspace instead of the existing xcode project file:
 
 ```
 MyApp.xcworkspace
@@ -104,13 +104,13 @@ MyApp.xcworkspace
 ***
 
 ### Carthage (coming soon)
-To install AppLaunch using Carthage, add it to your Cartfile:
+Add AppLaunch to your Cartfile in order to install using Carthage.
 
 ```
 github "ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch"
 ```
 
-Then run the `carthage update` command. Once the build is finished, drag `AppLaunch.framework` and `BMSCore.framework` into your Xcode project.
+Run the carthage update command. Once built, drag `AppLaunch.framework` and `BMSCore.framework` into your Xcode project.
 
 To complete the integration, follow the instructions [here](https://github.com/Carthage/Carthage#getting-started).
 
@@ -118,7 +118,7 @@ To complete the integration, follow the instructions [here](https://github.com/C
 
 ## Enabling iOS applications to use IBM App Launch
 
-### Reference the SDK in your code.
+### Import the App launch SDK in your code.
 
 ```
 import IBMAppLaunch
@@ -133,9 +133,9 @@ let config =   AppLaunchConfig.Builder().cacheExpiration(30).eventFlushInterval(
 
 The AppLaunchConfig builder is used to customize the following:
 
-- `eventFlushInterval` : Decides the time interval the events should be sent to the server. The default value is 30 minutes.
+- `eventFlushInterval` : Sets/Decide the time interval on when the events should be sent to the server. The default value is 30 minutes.
 
-- `cacheExpiration` : Decides the time interval the actions should be valid for. On expiration time the actions are fetched from the server. This parameter has effect when the `RefreshPolicy` is set to `RefreshPolicy.REFRESH_ON_EXPIRY` or `RefreshPolicy.BACKGROUND_REFRESH`. The default value is 30 minutes.
+- `cacheExpiration` : Sets/Decide the time interval until when the actions should be valid for. The default value is 30 minutes.
 
 - `fetchPolicy` : This parameter decides on how frequently the actions should be fetched from the server. The values can be one of the following:
 
@@ -216,11 +216,10 @@ AppLaunch.sharedInstance.destroy(completionHandler: AppLaunchCompletionHandler)
 
 * Visit the **[IBM Cloud Developers Community](https://developer.ibm.com/bluemix/)**.
 
-### Connect with Bluemix
+### Connect with IBM Cloud
 
 [Twitter](https://twitter.com/ibmbluemix)|
 [YouTube](https://www.youtube.com/watch?v=dQ1WcY_Ill4) |
 [Blog](https://developer.ibm.com/bluemix/blog/) |
 [Facebook](https://www.facebook.com/ibmbluemix) |
 [Meetup](http://www.meetup.com/bluemix/)
-
