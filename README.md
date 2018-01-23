@@ -25,14 +25,15 @@ Ensure that you go through [IBM Cloud App Launch service documentation](https://
 	 - [Creating an engagement](#creating-an-engagement)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Initialize SDK](#initialize-sdk)
-	- [Include client AppLaunch SDK](#include-client-appLaunch-sdk)
-	- [Initialize](#initialize)
+- [Enabling iOS applications to use IBM App Launch](#enabling-ios-applications-to-use-ibm-app-launch)
+	- [Import the App launch SDK in your code](#import-the-app-launch-sdk-in-your-code)
+	- [Initializing the AppLaunch SDK](#initializing-the-appLaunch-sdk)
 - [Feature Toggle](#feature-toggle)
-	- [Check if feature is enabled](#check-if-feature-is-enabled)
-	- [Get variable for feature](#get-variable-for-feature)
+	- [Check if feature is enabled](#feature-toggle)
+	- [Get variable for feature](#feature-toggle)
 - [Metrics](#metrics)
 	- [Send Metrics](#send-metrics)
+- [Destroy](#destroy)
 - [Samples and videos](#samples-and-videos)
 
 ***
@@ -137,6 +138,8 @@ The AppLaunchConfig builder is used to customize the following:
 
 - `cacheExpiration` : Sets/Decide the time interval until when the actions should be valid for. The default value is 30 minutes.
 
+	**Note** : This parameter is effective only if the `fetchPolicy` is set to `RefreshPolicy.REFRESH_ON_EXPIRY` or `RefreshPolicy.BACKGROUND_REFRESH`. 
+
 - `fetchPolicy` : This parameter decides on how frequently the actions should be fetched from the server. The values can be one of the following:
 
  	-`RefreshPolicy.REFRESH_ON_EVERY_START`
@@ -159,9 +162,9 @@ let user = AppLaunchUser.Builder(userId: "vittal").custom(key: "email", value: "
 
 The AppLaunchUser builder is used to provide the following information:
 
-`userId`: The user to be registered
+- `userId`: The user to be registered
 
-`custom`: This can be used to pass any optional custom user attributes. 
+- `custom`: This can be used to pass any optional custom user attributes. 
 
 ##### 3. Initialize App Launch SDK
 
@@ -178,9 +181,11 @@ Where `region` parameter specifies the location where the app is hosted. You can
 - `ICRegion.UNITED_KINGDOM_STAGING`
 
 The `appGUID` is the app launch app GUID value, while `clientSecret` is the appLaunch client secret value which can be obtained from the service console.
+
+`AppLaunchCompletionHandler` is the completion handler which will be used to notify in case of success and failure events.
      
 
-### Get features and its properties
+### Feature Toggle
 
 * Use the ```AppLaunch.sharedInstance.isFeatureEnabled(featureCode: "feature code")``` to check if the feature is enabled for the app.
 
