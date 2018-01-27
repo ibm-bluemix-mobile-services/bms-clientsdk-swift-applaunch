@@ -199,9 +199,9 @@ internal class AppLaunchAnalytics: AnalyticsDelegate {
     // Allows the developer to choose whether we should record location information for their users
     internal static var locationEnabled = false
     
-    // The manager and delegate that get the user's current location to log as metadata
-    internal static var locationManager = CLLocationManager()
-    internal static var locationDelegate = LocationDelegate()
+//    // The manager and delegate that get the user's current location to log as metadata
+//    internal static var locationManager = CLLocationManager()
+//    internal static var locationDelegate = LocationDelegate()
     
     
     
@@ -220,9 +220,9 @@ internal class AppLaunchAnalytics: AnalyticsDelegate {
             return
         }
         
-        if CLLocationManager.locationServicesEnabled() && CLLocationManager.authorizationStatus() == CLAuthorizationStatus.notDetermined {
-            self.locationManager.requestWhenInUseAuthorization()
-        }
+//        if CLLocationManager.locationServicesEnabled() && CLLocationManager.authorizationStatus() == CLAuthorizationStatus.notDetermined {
+//            self.locationManager.requestWhenInUseAuthorization()
+//        }
       
         AppLaunchAnalytics.startTime = Int64(Date.timeIntervalSinceReferenceDate * 1000) // milliseconds
         
@@ -336,25 +336,25 @@ internal class AppLaunchAnalytics: AnalyticsDelegate {
         
         // Get current location, add it to the metadata, and log
         if AppLaunchAnalytics.locationEnabled {
-            if CLLocationManager.locationServicesEnabled() &&
-                (CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedWhenInUse ||
-                    CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedAlways) {
-                
-                locationDelegate.analyticsMetadata = metadata
-                locationManager.delegate = locationDelegate
-                locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
-                
-                
-                if #available(iOS 9.0, *) {
-                    locationManager.requestLocation()
-                }
-                else {
-                    locationManager.startUpdatingLocation()
-                }
-            }
-            else {
-                Analytics.logger.warn(message: "The CLLocationManager authorization status must be authorizedWhenInUse before location data can be gathered.")
-            }
+//            if CLLocationManager.locationServicesEnabled() &&
+//                (CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedWhenInUse ||
+//                    CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedAlways) {
+//                
+//                locationDelegate.analyticsMetadata = metadata
+//                locationManager.delegate = locationDelegate
+//                locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
+//                
+//                
+//                if #available(iOS 9.0, *) {
+//                    locationManager.requestLocation()
+//                }
+//                else {
+//                    locationManager.startUpdatingLocation()
+//                }
+//            }
+//            else {
+//                Analytics.logger.warn(message: "The CLLocationManager authorization status must be authorizedWhenInUse before location data can be gathered.")
+//            }
         }
         else {
             Analytics.log(metadata: metadata)

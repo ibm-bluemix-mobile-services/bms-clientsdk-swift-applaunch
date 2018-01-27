@@ -13,41 +13,61 @@ import SwiftyJSON
 internal class AppLaunchCacheManager {
     static let sharedInstance = AppLaunchCacheManager()
     fileprivate let lock = NSLock()
-    private let userDefaults = UserDefaults.standard
+    private let userDefaults = UserDefaults.init(suiteName: SERVICE_NAME)
     private let JSON_PATH_EXTENSION:String = ".json"
     private let JSON_NAME:String = "json"
-    private let SERVICE_NAME:String = "AppLaunch"
     
     /**
      * Add the string value to the local cache with the given key
      * @param key
      * @param value
      */
-    func addString(_ value:String,_ key:String) -> Void{
-        userDefaults.set(value,forKey: key)
-        userDefaults.synchronize()
+    func addString(_ value:String,_ key:String) -> Void {
+        userDefaults?.set(value,forKey: key)
+        userDefaults?.synchronize()
     }
     
+    func addAction(_ value:String,_ key:String) -> Void {
+        let defaults = UserDefaults.init(suiteName: ACTION)
+        defaults?.set(value,forKey: key)
+        defaults?.synchronize()
+    }
+    
+    func readAction(_ key: String) -> JSON {
+        let defaults = UserDefaults.init(suiteName: ACTION)
+        if (defaults?.object(forKey: key) != nil) {
+            let data = defaults?.object(forKey: key) as! String
+            return JSON.init(parseJSON: data)
+        }
+        return JSON.null    }
+    
+    func clearActions() -> Void{
+        let defaults = UserDefaults.init(suiteName: ACTION)
+        defaults?.removePersistentDomain(forName: ACTION)
+    }
+
+    
     func readString(_ key:String) -> String {
-        if (userDefaults.value(forKey: key) != nil) {
-            return userDefaults.value(forKey: key) as! String
+        if (userDefaults?.value(forKey: key) != nil) {
+            return userDefaults?.value(forKey: key) as! String
         }
         return ""
     }
     
     func clearString(_ key:String) -> Void {
-        userDefaults.removeObject(forKey: key)
-        userDefaults.synchronize()
+        userDefaults?.removeObject(forKey: key)
+        userDefaults?.synchronize()
     }
     
     func clearUserDefaults() -> Void {
         // Clears registration data and actions from User defaults
-        UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
+        clearActions()
+        UserDefaults.standard.removePersistentDomain(forName: SERVICE_NAME)
     }
     
     func readJSON(_ key: String) -> JSON{
-        if (userDefaults.object(forKey: key) != nil) {
-            let data = userDefaults.object(forKey: key) as! String
+        if (userDefaults?.object(forKey: key) != nil) {
+            let data = userDefaults?.object(forKey: key) as! String
             return JSON.init(parseJSON: data)
         }
         return JSON.null
@@ -80,7 +100,7 @@ internal class AppLaunchCacheManager {
         lock.lock()
         defer {lock.unlock()}
         if (action != JSON.null) {
-            addString(action.rawString()!,action[CODE].string!)
+            addAction(action.rawString()!,action[CODE].string!)
         }
     }
     

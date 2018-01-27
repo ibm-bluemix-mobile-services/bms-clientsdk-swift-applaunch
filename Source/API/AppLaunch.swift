@@ -149,7 +149,7 @@ public class AppLaunch: NSObject {
      */
     public func isFeatureEnabled(featureCode: String) throws -> Bool{
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
-            if(AppLaunchCacheManager.sharedInstance.readJSON(featureCode) != JSON.null) {
+            if(AppLaunchCacheManager.sharedInstance.readAction(featureCode) != JSON.null) {
                 return true
             }
             return false
@@ -171,7 +171,7 @@ public class AppLaunch: NSObject {
      */
     public func getPropertyofFeature(featureCode: String , propertyCode: String) throws -> String {
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
-            let feature = AppLaunchCacheManager.sharedInstance.readJSON(featureCode)
+            let feature = AppLaunchCacheManager.sharedInstance.readAction(featureCode)
             if (feature != JSON.null) {
                 for(_,property) in feature[PROPERTIES]{
                     if let propertyCode = property[CODE].string{
@@ -207,12 +207,15 @@ public class AppLaunch: NSObject {
             getActions(completionHandler)
         } else {
             var method:HttpMethod = HttpMethod.POST
+            var requestURL:String = URLBuilder!.getAppRegistrationURL()
+            var registrationData:JSON = AppLaunchUtils.getRegistrationData(user, config)
             if AppLaunchUtils.isUpdateRegistrationRequired(user, config) {
                 // Update Registration Call
                 method = HttpMethod.PUT
+                requestURL = URLBuilder!.getUserURL()
+                registrationData = AppLaunchUtils.getUpdateRegistrationData(user, config)
             }
-            let registrationData:JSON = AppLaunchUtils.getRegistrationData(user, config)
-            let request = AppLaunchInvoker(url: URLBuilder!.getAppRegistrationURL(), method: method, timeout: 60)
+            let request = AppLaunchInvoker(url: requestURL, method: method, timeout: 60)
             request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
             request.addHeader(config.getClientSecret(), CLIENT_SECRET)
             request.setJSONRequestBody(registrationData)
@@ -289,6 +292,7 @@ public class AppLaunch: NSObject {
                             let ExpirationTime = String(Int(AppLaunchUtils.getCurrentDateAndTime()) + Int(self.config.getCacheExpiration() * 60))
                             AppLaunchCacheManager.sharedInstance.addString(ExpirationTime, CACHE_EXPIRATION)
                             AppLaunchCacheManager.sharedInstance.addString(respJson.rawString()!, ACTION)
+                            AppLaunchCacheManager.sharedInstance.clearActions()
                             AppLaunchCacheManager.sharedInstance.addActions(respJson[FEATURES])
                             AppLaunchCacheManager.sharedInstance.addInAppActionToCache(respJson[INAPP])
                             completionHandler(AppLaunchResponse(respJson), nil)
