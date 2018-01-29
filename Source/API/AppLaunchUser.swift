@@ -43,10 +43,26 @@ public class AppLaunchUser {
         }
         
         /**
-          This is an optional method which can be used to set any custom user attributes.
+         This is an optional method which can be used to set any custom user attribute of String type.
          */
-        public func custom(key: String, value: String) -> Builder {
-            self.attributes[key].stringValue = value
+        public func custom(key: String, stringValue: String) -> Builder {
+            self.attributes[key].stringValue = stringValue
+            return self
+        }
+        
+        /**
+         This is an optional method which can be used to set any custom user attribute of Bool type.
+         */
+        public func custom(key: String, boolValue: Bool) -> Builder {
+            self.attributes[key].boolValue = boolValue
+            return self
+        }
+        
+        /**
+         This is an optional method which can be used to set any custom user attribute of Int type.
+         */
+        public func custom(key: String, intValue: Int) -> Builder {
+            self.attributes[key].intValue = intValue
             return self
         }
         
@@ -73,7 +89,6 @@ public class AppLaunchUser {
     }
     
 }
-
 
 
 
