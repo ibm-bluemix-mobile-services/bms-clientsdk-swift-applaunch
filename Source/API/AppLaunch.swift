@@ -141,6 +141,20 @@ public class AppLaunch: NSObject {
     }
     
     /**
+     Displays inApp Message if there is any present
+     
+     - Throws: `AppLaunchError.applaunchNotIntialized` error if applaunch service is not initialized
+     */
+    public func displayInAppMessages() throws {
+        if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
+            self.processInAppActions()
+        } else {
+            throw AppLaunchError.applaunchNotIntialized
+        }
+    }
+    
+    
+    /**
      Checks if the feature is enabled for the app
      
      - returns: Bool value
@@ -266,8 +280,6 @@ public class AppLaunch: NSObject {
                                                       repeats:true)
             break
         }
-        // Display InApp Messages
-        NotificationCenter.default.addObserver(self, selector: #selector(self.processInAppActions), name: .UIApplicationDidBecomeActive, object: nil)
     }
     
     
@@ -370,7 +382,6 @@ public class AppLaunch: NSObject {
                 }
             }
         }
-        NotificationCenter.default.removeObserver(self, name: .UIApplicationDidBecomeActive, object: nil)
     }
     
     private func IntializeSession() {
