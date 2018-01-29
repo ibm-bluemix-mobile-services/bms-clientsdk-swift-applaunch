@@ -33,6 +33,8 @@ Ensure that you go through [IBM Cloud App Launch service documentation](https://
 	- [Get variable for feature](#feature-toggle)
 - [Metrics](#metrics)
 	- [Send Metrics](#send-metrics)
+- [InApp Messages](#inapp-messages)
+    - [Display InApp Messages](#display-inappmessages) 
 - [Destroy](#destroy)
 - [Samples and videos](#samples-and-videos)
 
@@ -203,6 +205,14 @@ AppLaunch.sharedInstance.sendMetrics(code: ["metricCodes"])
 ```
 
  **Note** : The above API throws `applaunchNotIntialized` error if `sendMetrics` is invoked before `initialize` API.
+ 
+### InApp Messages
+
+To display InApp messages invoke the following API.
+
+```
+ AppLaunch.sharedInstance.displayInAppMessages()
+```
 
 ### Destroy
 

@@ -72,3 +72,5 @@ internal let IMAGE_URL:String = "imageUrl"
 internal let LAYOUT:String = "layout"
 
 internal let CACHE_EXPIRATION:String = "CACHE_EXPIRATION"
+
+internal let SERVICE_NAME:String = "APPLAUNCH"

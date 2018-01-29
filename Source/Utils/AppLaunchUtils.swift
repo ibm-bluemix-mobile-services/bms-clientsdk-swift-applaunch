@@ -34,6 +34,16 @@ internal class AppLaunchUtils:NSObject{
         return registrationData
     }
     
+    class func getUpdateRegistrationData(_ user: AppLaunchUser,_ config: AppLaunchConfig) -> JSON {
+        var registrationData:JSON = JSON()
+        registrationData[PLATFORM].string = IOS
+        registrationData[USER_ID].string = user.getUserId()
+        if (user.getAttributes() != JSON.null) {
+            registrationData[ATTRIBUTES] = user.getAttributes()
+        }
+        return registrationData
+    }
+    
     class func saveUserContext(_ user: AppLaunchUser,_ config: AppLaunchConfig){
         let defaults = AppLaunchCacheManager.sharedInstance
         defaults.addString(user.getUserId(), USER_ID)
