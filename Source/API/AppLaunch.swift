@@ -188,8 +188,8 @@ public class AppLaunch: NSObject {
             let feature = AppLaunchCacheManager.sharedInstance.readAction(featureCode)
             if (feature != JSON.null) {
                 for(_,property) in feature[PROPERTIES]{
-                    if let propertyCode = property[CODE].string{
-                        if propertyCode == propertyCode{
+                    if let code = property[CODE].string{
+                        if code == propertyCode{
                             return property[VALUE].stringValue
                         }
                     }
