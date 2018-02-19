@@ -36,7 +36,7 @@ internal let MSG__ERR_NOT_INIT = "AppLaunch SDK is not initialized or the user i
 
 internal let APPLICATION_ID:String = "applicationId"
 
-internal let IOS:String = "iOS"
+internal let IOS:String = "A"
 
 internal let DEVICE_ID:String = "deviceId"
 
