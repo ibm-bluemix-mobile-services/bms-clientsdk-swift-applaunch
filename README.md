@@ -224,7 +224,7 @@ AppLaunch.sharedInstance.destroy(completionHandler: AppLaunchCompletionHandler)
 
 ### Samples and Videos
 
-* For samples, visit - [Github Sample](https://github.com/ibm-bluemix-mobile-services/bms-samples-swift-helloapplaunch)
+* For samples, visit - [Github Sample](https://github.com/ibm-cloud-applaunch/sample-swift-poll)
 
 
 ### Learn More
