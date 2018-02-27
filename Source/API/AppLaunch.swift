@@ -228,7 +228,7 @@ public class AppLaunch: NSObject {
      - returns: AppLaunchCompletionHandler: A completion-handler callback function. In the case of a successful completion, the success information is returned in the AppLaunchResponse. In the case of a unsuccessful completion, the error information is returned in the AppLaunchFailResponse
      */
     private func registerDevice(_ completionHandler: @escaping AppLaunchCompletionHandler){
-        if(!AppLaunchUtils.userNeedsToBeRegistered() && !AppLaunchUtils.isUpdateRegistrationRequired(user, config) ) {
+        if(!AppLaunchUtils.userNeedsToBeRegistered() && !AppLaunchUtils.isUserNeedsToBeReRegistered(user, config)) {
             // User Already Registered, Proceed with getActions Call
             Analytics.userIdentity = user.getUserId()
             getActions(completionHandler)

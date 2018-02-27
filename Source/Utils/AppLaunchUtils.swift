@@ -77,13 +77,24 @@ internal class AppLaunchUtils:NSObject{
         return true
     }
     
-    class func isUpdateRegistrationRequired(_ user: AppLaunchUser,_ config: AppLaunchConfig) -> Bool {
+    class func isUserNeedsToBeReRegistered(_ user: AppLaunchUser,_ config: AppLaunchConfig) -> Bool {
         let defaults = AppLaunchCacheManager.sharedInstance
-        if userNeedsToBeRegistered() {
-            return false
-        }
         if (defaults.readString(USER_ID) == user.getUserId() && defaults.readJSON(ATTRIBUTES) == user.getAttributes() && defaults.readString(DEVICE_ID) == config.getDeviceID() && defaults.readString(APP_ID) == config.getAppID() && defaults.readString(REGION) == config.getICRegion()) {
             // Stored app data and device data is not changed
+            return false
+        }
+        return true
+    }
+    
+    
+    
+    class func isUpdateRegistrationRequired(_ user: AppLaunchUser,_ config: AppLaunchConfig) -> Bool {
+        let defaults = AppLaunchCacheManager.sharedInstance
+        if defaults.readString(DEVICE_ID) != config.getDeviceID() {
+            return false
+        }
+        if (defaults.readString(USER_ID) == user.getUserId() && defaults.readJSON(ATTRIBUTES) == user.getAttributes()) {
+            // user data is not changed
             return false
         }
         return true
