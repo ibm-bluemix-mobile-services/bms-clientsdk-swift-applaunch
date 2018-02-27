@@ -95,14 +95,12 @@ internal class MessageData {
     
     
     func getImage() -> Data {
+        var imageData:Data = Data()
         do {
-            if(!action[IMAGE_URL].stringValue.isEmpty){
-                imageData = try NSData(contentsOf: URL(string: image)!)
-            }else{
-                imageData = NSData()
+            if(!image.isEmpty){
+                imageData = try Data(contentsOf: URL(string: image)!)
             }
         } catch  {
-            imageData = NSData()
         }
         return imageData
     }
