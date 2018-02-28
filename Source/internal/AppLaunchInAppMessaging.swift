@@ -31,7 +31,7 @@ internal class AppLaunchInAppMessaging: NSObject {
     
     
     init(_ data: JSON) {
-        self.action = MessageData.init(data[TITLE].stringValue, data[SUB_TITLE].stringValue,  Data(base64Encoded: data[IMAGE_URL].stringValue, options: .ignoreUnknownCharacters)!, data[LAYOUT].stringValue, data[BUTTONS]);
+        self.action = MessageData.init(data[TITLE].stringValue, data[SUB_TITLE].stringValue, data[IMAGE_URL].stringValue, data[LAYOUT].stringValue, data[BUTTONS]);
     }
     
     func ShowBanner() -> Void {
@@ -70,13 +70,13 @@ internal enum TriggerType : String {
 }
 
 internal class MessageData {
-    private var image:Data
+    private var image:String
     private var title:String
     private var subTitle:String
     private var buttonData:[ButtonData]?
     private var layout:String
     
-    init(_ title:String,_ subTitle:String,_ image:Data,_ layout:String,_ buttonData:JSON) {
+    init(_ title:String,_ subTitle:String,_ image:String,_ layout:String,_ buttonData:JSON) {
         self.title = title
         self.subTitle = subTitle
         self.image = image
@@ -95,7 +95,14 @@ internal class MessageData {
     
     
     func getImage() -> Data {
-        return image
+        var imageData:Data = Data()
+        do {
+            if(!image.isEmpty){
+                imageData = try Data(contentsOf: URL(string: image)!)
+            }
+        } catch  {
+        }
+        return imageData
     }
     
     func getTitle() -> String {

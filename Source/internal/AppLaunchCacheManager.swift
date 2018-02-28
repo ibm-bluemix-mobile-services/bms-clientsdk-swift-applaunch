@@ -122,18 +122,7 @@ internal class AppLaunchCacheManager {
         defer {lock.unlock()}
         var data = [JSON]()
         for (_, action) in actions {
-            var imageData:NSData
             var json = action
-            do {
-                if(!action[IMAGE_URL].stringValue.isEmpty){
-                    imageData = try NSData(contentsOf: URL(string: action[IMAGE_URL].stringValue)!)
-                }else{
-                    imageData = NSData()
-                }
-            } catch  {
-                imageData = NSData()
-            }
-            json[IMAGE_URL].stringValue = imageData.base64EncodedString(options: .lineLength64Characters)
             data.append(json)
         }
         addString(JSON(data).rawString()!, INAPP)
