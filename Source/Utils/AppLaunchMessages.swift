@@ -68,6 +68,8 @@ internal let REGION = "region"
 
 internal let NAME:String = "name"
 
+internal let LABEL:String = "label"
+
 internal let CODE:String = "code"
 
 internal let FEATURES:String = "features"

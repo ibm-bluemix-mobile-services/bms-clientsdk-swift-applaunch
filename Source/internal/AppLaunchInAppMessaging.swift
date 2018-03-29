@@ -87,7 +87,7 @@ internal class MessageData {
     private func processButtons(_ data: JSON) -> [ButtonData]{
         var list = [ButtonData]()
         for (_, b1) in data {
-            let button = ButtonData.init(b1[NAME].stringValue, b1[ACTION].stringValue, b1[METRICS])
+            let button = ButtonData.init(b1[LABEL].stringValue, b1[ACTION].stringValue, b1[METRICS])
             list.append(button)
         }
         return list
