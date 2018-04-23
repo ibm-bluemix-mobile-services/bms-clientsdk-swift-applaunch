@@ -39,7 +39,8 @@ internal class AppLaunchUtils:NSObject{
     class func getRegistrationData(_ user: AppLaunchUser,_ config: AppLaunchConfig) -> JSON {
         var registrationData:JSON = JSON()
         registrationData[DEVICE_ID].string = config.getDeviceID()
-        registrationData[PLATFORM].string = IOS
+        registrationData[PLATFORM].string = MOBILE
+        registrationData[OS].string = IOS
         registrationData[USER_ID].string = user.getUserId()
         if (user.getAttributes() != JSON.null) {
             registrationData[ATTRIBUTES] = user.getAttributes()
@@ -48,12 +49,8 @@ internal class AppLaunchUtils:NSObject{
     }
     
     class func getUpdateRegistrationData(_ user: AppLaunchUser,_ config: AppLaunchConfig) -> JSON {
-        var registrationData:JSON = JSON()
-        registrationData[PLATFORM].string = IOS
-        registrationData[USER_ID].string = user.getUserId()
-        if (user.getAttributes() != JSON.null) {
-            registrationData[ATTRIBUTES] = user.getAttributes()
-        }
+        var registrationData:JSON = getRegistrationData(user, config)
+        registrationData.dictionaryObject?.removeValue(forKey: DEVICE_ID)
         return registrationData
     }
     
