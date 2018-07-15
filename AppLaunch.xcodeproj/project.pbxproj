@@ -38,7 +38,6 @@
 		C7C60C281FD832600094BB18 /* AppLaunchCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C60C271FD832600094BB18 /* AppLaunchCacheManager.swift */; };
 		C7D4DAA11FE1084B007C9E98 /* AppLaunchInvoker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAA01FE1084B007C9E98 /* AppLaunchInvoker.swift */; };
 		C7D4DAA31FE124B4007C9E98 /* AppLaunchURLBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAA21FE124B4007C9E98 /* AppLaunchURLBuilder.swift */; };
-		C7D4DAA61FE2507F007C9E98 /* AppLaunchInAppMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAA51FE2507F007C9E98 /* AppLaunchInAppMessaging.swift */; };
 		C7D4DAAF1FE28856007C9E98 /* PMAlertAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAAC1FE28855007C9E98 /* PMAlertAction.swift */; };
 		C7D4DAB01FE28856007C9E98 /* PMAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAAD1FE28856007C9E98 /* PMAlertController.swift */; };
 		C7D4DAB11FE28856007C9E98 /* PMAlertController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7D4DAAE1FE28856007C9E98 /* PMAlertController.xib */; };
@@ -81,7 +80,6 @@
 		C7C60C271FD832600094BB18 /* AppLaunchCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchCacheManager.swift; sourceTree = "<group>"; };
 		C7D4DAA01FE1084B007C9E98 /* AppLaunchInvoker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchInvoker.swift; sourceTree = "<group>"; };
 		C7D4DAA21FE124B4007C9E98 /* AppLaunchURLBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchURLBuilder.swift; sourceTree = "<group>"; };
-		C7D4DAA51FE2507F007C9E98 /* AppLaunchInAppMessaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchInAppMessaging.swift; sourceTree = "<group>"; };
 		C7D4DAAC1FE28855007C9E98 /* PMAlertAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PMAlertAction.swift; sourceTree = "<group>"; };
 		C7D4DAAD1FE28856007C9E98 /* PMAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PMAlertController.swift; sourceTree = "<group>"; };
 		C7D4DAAE1FE28856007C9E98 /* PMAlertController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PMAlertController.xib; sourceTree = "<group>"; };
@@ -208,7 +206,6 @@
 				C7C60C271FD832600094BB18 /* AppLaunchCacheManager.swift */,
 				C7D4DAA01FE1084B007C9E98 /* AppLaunchInvoker.swift */,
 				C7D4DAA21FE124B4007C9E98 /* AppLaunchURLBuilder.swift */,
-				C7D4DAA51FE2507F007C9E98 /* AppLaunchInAppMessaging.swift */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -424,7 +421,6 @@
 				480BF7A71F764E0B00C70D6C /* AppLaunch.swift in Sources */,
 				480BF7A51F764C7200C70D6C /* AppLaunchEnumerators.swift in Sources */,
 				C7D9FD1A1FE7B8D9009932AD /* AppLaunchResponse.swift in Sources */,
-				C7D4DAA61FE2507F007C9E98 /* AppLaunchInAppMessaging.swift in Sources */,
 				C798DE2A1FFE37C700803D14 /* Error.swift in Sources */,
 				C7D4DAA11FE1084B007C9E98 /* AppLaunchInvoker.swift in Sources */,
 			);

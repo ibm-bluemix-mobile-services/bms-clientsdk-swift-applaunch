@@ -76,19 +76,19 @@ internal let LABEL:String = "label"
 
 internal let CODE:String = "code"
 
-internal let FEATURES:String = "features"
+internal let STATUS:String = "status"
+
+internal let LAUNCHED:String = "launched"
+
+internal let ACTIVE:String = "active"
+
+internal let FEATURES:String = "featureControl"
 
 internal let TRIGGERS:String = "triggers"
 
 internal let PROPERTIES:String = "properties"
 
 internal let VALUE:String = "value"
-
-internal let INAPP:String = "inApp"
-
-internal let IMAGE_URL:String = "imageUrl"
-
-internal let LAYOUT:String = "layout"
 
 internal let CACHE_EXPIRATION:String = "CACHE_EXPIRATION"
 
