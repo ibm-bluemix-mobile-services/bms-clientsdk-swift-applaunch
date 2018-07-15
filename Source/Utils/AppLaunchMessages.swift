@@ -84,8 +84,6 @@ internal let ACTIVE:String = "active"
 
 internal let FEATURES:String = "featureControl"
 
-internal let TRIGGERS:String = "triggers"
-
 internal let PROPERTIES:String = "properties"
 
 internal let VALUE:String = "value"
