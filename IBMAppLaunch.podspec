@@ -9,8 +9,6 @@ Pod::Spec.new do |s|
   s.authors      = { 'IBM Cloud Services Mobile SDK' => 'mobilsdk@us.ibm.com' }
   s.source       = { :git => 'https://github.com/ibm-bluemix-mobile-services/bms-clientsdk-swift-applaunch.git', :tag => s.version }
   s.source_files = 'Source/**/*.swift'
-  s.resources = 'Source/UIComponents/*.xib '
-
 
   s.dependency 'BMSCore', '~> 2.0'
   s.dependency 'SwiftyJSON', '~> 4.0.0'
