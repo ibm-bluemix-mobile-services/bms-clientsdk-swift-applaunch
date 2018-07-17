@@ -38,9 +38,6 @@
 		C7C60C281FD832600094BB18 /* AppLaunchCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C60C271FD832600094BB18 /* AppLaunchCacheManager.swift */; };
 		C7D4DAA11FE1084B007C9E98 /* AppLaunchInvoker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAA01FE1084B007C9E98 /* AppLaunchInvoker.swift */; };
 		C7D4DAA31FE124B4007C9E98 /* AppLaunchURLBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAA21FE124B4007C9E98 /* AppLaunchURLBuilder.swift */; };
-		C7D4DAAF1FE28856007C9E98 /* PMAlertAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAAC1FE28855007C9E98 /* PMAlertAction.swift */; };
-		C7D4DAB01FE28856007C9E98 /* PMAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D4DAAD1FE28856007C9E98 /* PMAlertController.swift */; };
-		C7D4DAB11FE28856007C9E98 /* PMAlertController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7D4DAAE1FE28856007C9E98 /* PMAlertController.xib */; };
 		C7D9FD1A1FE7B8D9009932AD /* AppLaunchResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D9FD191FE7B8D9009932AD /* AppLaunchResponse.swift */; };
 		C7D9FD1C1FE7B8F7009932AD /* AppLaunchFailResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D9FD1B1FE7B8F7009932AD /* AppLaunchFailResponse.swift */; };
 		CA3FDD87BB6A7A7FBEFF3561 /* Pods_AppLaunch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60AA0B9F4AAC555FDCF1D31C /* Pods_AppLaunch.framework */; };
@@ -80,9 +77,6 @@
 		C7C60C271FD832600094BB18 /* AppLaunchCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchCacheManager.swift; sourceTree = "<group>"; };
 		C7D4DAA01FE1084B007C9E98 /* AppLaunchInvoker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchInvoker.swift; sourceTree = "<group>"; };
 		C7D4DAA21FE124B4007C9E98 /* AppLaunchURLBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchURLBuilder.swift; sourceTree = "<group>"; };
-		C7D4DAAC1FE28855007C9E98 /* PMAlertAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PMAlertAction.swift; sourceTree = "<group>"; };
-		C7D4DAAD1FE28856007C9E98 /* PMAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PMAlertController.swift; sourceTree = "<group>"; };
-		C7D4DAAE1FE28856007C9E98 /* PMAlertController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PMAlertController.xib; sourceTree = "<group>"; };
 		C7D9FD191FE7B8D9009932AD /* AppLaunchResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchResponse.swift; sourceTree = "<group>"; };
 		C7D9FD1B1FE7B8F7009932AD /* AppLaunchFailResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchFailResponse.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -154,7 +148,6 @@
 				C798DE221FFE37C700803D14 /* Logger */,
 				C7D9FD181FE7B8AA009932AD /* Response */,
 				C77C6E621FD7C79E00217304 /* Utils */,
-				C7D4DAAB1FE28806007C9E98 /* UIComponents */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -208,24 +201,6 @@
 				C7D4DAA21FE124B4007C9E98 /* AppLaunchURLBuilder.swift */,
 			);
 			path = Internal;
-			sourceTree = "<group>";
-		};
-		C7D4DAAB1FE28806007C9E98 /* UIComponents */ = {
-			isa = PBXGroup;
-			children = (
-				C7D4DAB31FE2892F007C9E98 /* AlertController */,
-			);
-			path = UIComponents;
-			sourceTree = "<group>";
-		};
-		C7D4DAB31FE2892F007C9E98 /* AlertController */ = {
-			isa = PBXGroup;
-			children = (
-				C7D4DAAC1FE28855007C9E98 /* PMAlertAction.swift */,
-				C7D4DAAD1FE28856007C9E98 /* PMAlertController.swift */,
-				C7D4DAAE1FE28856007C9E98 /* PMAlertController.xib */,
-			);
-			name = AlertController;
 			sourceTree = "<group>";
 		};
 		C7D9FD181FE7B8AA009932AD /* Response */ = {
@@ -338,7 +313,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C7D4DAB11FE28856007C9E98 /* PMAlertController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -414,8 +388,6 @@
 				C7D4DAA31FE124B4007C9E98 /* AppLaunchURLBuilder.swift in Sources */,
 				C798DE2C1FFE37C700803D14 /* LocationDelegate.swift in Sources */,
 				480BF7A91F764FD800C70D6C /* AppLaunchUtils.swift in Sources */,
-				C7D4DAB01FE28856007C9E98 /* PMAlertController.swift in Sources */,
-				C7D4DAAF1FE28856007C9E98 /* PMAlertAction.swift in Sources */,
 				C798DE291FFE37C700803D14 /* Constants.swift in Sources */,
 				C798DE301FFE37D800803D14 /* AppLaunchUser.swift in Sources */,
 				480BF7A71F764E0B00C70D6C /* AppLaunch.swift in Sources */,
