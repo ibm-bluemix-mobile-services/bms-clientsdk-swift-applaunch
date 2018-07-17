@@ -154,16 +154,30 @@ public class AppLaunch: NSObject {
     }
     
     /**
-     Displays inApp Message if there is any present
      
-     - Throws: `AppLaunchError.applaunchNotIntialized` error if applaunch service is not initialized
+     This Method used to send activation information to the IBM Cloud AppLaunch service.
+     
+     - Parameter name: Name of the feature control
+
      */
-    public func displayInAppMessages() throws {
-        if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
-            self.processInAppActions()
-        } else {
-            throw AppLaunchError.applaunchNotIntialized
-        }
+    public func sendActivation(name: String!) {
+        var activationData:JSON = JSON()
+        activationData[FEATURES].string = name
+        let request = AppLaunchInvoker(url: (URLBuilder?.getActivationURL())!, method: HttpMethod.POST, timeout: 60)
+        request.addHeader(APPLICATION_JSON, CONTENT_TYPE)
+        request.addHeader(config.getClientSecret(), CLIENT_SECRET)
+        request.setJSONRequestBody(activationData)
+        request.setCompletionHandler({(response,error) in
+            
+            let status = response?.statusCode ?? 0
+            if(status == 202){
+                print("Sent activation successfully for the feature control : " + name)
+            }else if let responseError = error{
+                print("Error in sending activation for the feature control : '" + name + "' with error :\(responseError.localizedDescription)")
+            }
+            
+        })
+        request.execute()
     }
     
     
@@ -198,8 +212,13 @@ public class AppLaunch: NSObject {
      */
     public func getPropertyofFeature(featureCode: String , propertyCode: String) throws -> String {
         if(!AppLaunchUtils.userNeedsToBeRegistered() && isInitialized){
-            let feature = AppLaunchCacheManager.sharedInstance.readAction(featureCode)
+            var feature = AppLaunchCacheManager.sharedInstance.readAction(featureCode)
             if (feature != JSON.null) {
+                if (feature[STATUS].stringValue == LAUNCHED) {
+                    feature[STATUS].string = ACTIVE
+                    AppLaunchCacheManager.sharedInstance.addAction(feature.rawString()!, feature[CODE].string!)
+                    sendActivation(name: feature[NAME].stringValue);
+                }
                 for(_,property) in feature[PROPERTIES]{
                     if let code = property[CODE].string{
                         if code == propertyCode{
@@ -319,7 +338,6 @@ public class AppLaunch: NSObject {
                             AppLaunchCacheManager.sharedInstance.addString(respJson.rawString()!, ACTION)
                             AppLaunchCacheManager.sharedInstance.clearActions()
                             AppLaunchCacheManager.sharedInstance.addActions(respJson[FEATURES])
-                            AppLaunchCacheManager.sharedInstance.addInAppActionToCache(respJson[INAPP])
                             completionHandler(AppLaunchResponse(respJson), nil)
                         } catch {
                             completionHandler(nil, AppLaunchFailResponse(.FETCH_ACTIONS_FAILURE , error.localizedDescription))
@@ -346,56 +364,6 @@ public class AppLaunch: NSObject {
         }
     }
     
-    private func displayInAppMessage(_ action: JSON) -> Void {
-        let layout : String = action[LAYOUT].stringValue
-        switch(layout){
-        case MessageType.Banner.rawValue:
-            AppLaunchInAppMessaging(action).ShowBanner()
-            break
-        default :
-            break
-        }
-    }
-    
-    @objc private func processInAppActions() -> Void {
-        let InAppActions = AppLaunchCacheManager.sharedInstance.readJSON(INAPP)
-        for (_, action) in InAppActions {
-            for (_, trigger) in action[TRIGGERS] {
-                let triggerAction : String = trigger[ACTION].stringValue
-                switch(triggerAction){
-                case TriggerType.EveryLaunch.rawValue :
-                    displayInAppMessage(action)
-                    break
-                case TriggerType.FirstLaunch.rawValue :
-                    let previousDateString = AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction).isEmpty ? "0" : AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction)
-                    let previousDate = Int(previousDateString)!
-                    let currentDate = AppLaunchUtils.getCurrentDate()
-                    // Check if date changed or not
-                    if(currentDate > previousDate) {
-                        displayInAppMessage(action)
-                        AppLaunchCacheManager.sharedInstance.addString(String(AppLaunchUtils.getCurrentDate()), action[NAME].stringValue + triggerAction)
-                    }
-                    break
-                case TriggerType.EveryAlternateLaunch.rawValue :
-                    if(AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction).isEmpty) {
-                        displayInAppMessage(action)
-                        AppLaunchCacheManager.sharedInstance.addString(triggerAction, action[NAME].stringValue + triggerAction)
-                    } else {
-                        AppLaunchCacheManager.sharedInstance.clearString(action[NAME].stringValue + triggerAction)
-                    }
-                    break
-                case TriggerType.OnceAndOnlyOnce.rawValue :
-                    if(AppLaunchCacheManager.sharedInstance.readString(action[NAME].stringValue + triggerAction).isEmpty) {
-                        displayInAppMessage(action)
-                        AppLaunchCacheManager.sharedInstance.addString(triggerAction, action[NAME].stringValue + triggerAction)
-                    }
-                    break
-                default :
-                    break
-                }
-            }
-        }
-    }
     
     private func IntializeSession() {
         Analytics.initialize(config: config, url: (URLBuilder?.getSessionURL())!, hasUserContext: true, collectLocation: false, deviceEvents: .lifecycle, .network)
